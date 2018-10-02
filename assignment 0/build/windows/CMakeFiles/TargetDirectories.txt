@@ -1,0 +1,7 @@
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/CMakeFiles/doc.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/src/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/src/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/src/CMakeFiles/debug_aabb.dir
+/mnt/c/Users/joeft/Onedrive/Git/CG-HS18/assignment 0/build/windows/src/CMakeFiles/raytrace.dir
