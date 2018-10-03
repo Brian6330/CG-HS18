@@ -46,11 +46,11 @@ intersect(const Ray& _ray,
     */
 
     // SELF-IMPLEMENTATION
-    const vec3 &direction = _ray.direction;
-    const vec3    &origin = _ray.origin;
-    const vec3     offset = center - origin;
+    const vec3    &dir = _ray.direction;
+    const vec3 &origin = _ray.origin;
+    const vec3  offset = center - origin;
 
-    const double angle = dot(normal, direction);
+    const double angle = dot(normal, dir);
 
     // is perpendicular (very close to)
     if (std::abs(angle) <= 0.0001) return false;
@@ -60,8 +60,8 @@ intersect(const Ray& _ray,
     // intersection behind the viewer;
     if (_intersection_t < 0) return false;
 
-    _intersection_point = origin + _intersection_t*direction;
-    _intersection_normal = direction - 2*angle*normal;
+    _intersection_point = origin + _intersection_t*dir;
+    _intersection_normal = normalize(dir - 2*angle*normal);
 
     return true;
 }
