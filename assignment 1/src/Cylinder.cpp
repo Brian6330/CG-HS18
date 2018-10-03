@@ -63,14 +63,8 @@ intersect(const Ray&  _ray,
 
     _intersection_point = origin + _intersection_t*dir;
 
-    // TODO: _intersection_normal berechnen.
-    // Berechnung gleich wie bei "Plane.cpp".
-    // Der Normalenvektor des Zylinders ist der vom Zentrum aus zum _intersection_point
-
-    // const vec3 normal = ???;
-
-    const double c_to_i = norm(_intersection_point - center);
-    const double      h = sqrt(pow(radius, 2) - pow(c_to_i, 2));
+    const double center_to_intersection = norm(_intersection_point - center);
+    const double      h = sqrt(pow(radius, 2) - pow(center_to_intersection, 2));
     const   vec3 normal = _intersection_point -(center + h*normalize(axis));
     const double  angle = dot(dir, normal);
 
