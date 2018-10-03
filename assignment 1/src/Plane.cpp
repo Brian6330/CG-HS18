@@ -52,10 +52,14 @@ intersect(const Ray& _ray,
 
     const double angle = dot(normal, direction);
 
-    // is "behind the viewer" (<0) or "perpendicular" (<= 0.0001)
-    if (angle <= 0.0001) return false;
+    // is perpendicular (very close to)
+    if (std::abs(angle) <= 0.0001) return false;
 
     _intersection_t = dot(normal, offset) / angle;
+
+    // intersection behind the viewer;
+    if (_intersection_t < 0) return false;
+
     _intersection_point = origin + _intersection_t*direction;
     _intersection_normal = direction - 2*angle*normal;
 
