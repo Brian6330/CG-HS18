@@ -53,12 +53,12 @@ intersect(const Ray& _ray,
     const double angle = dot(normal, dir);
 
     // is perpendicular (very close to)
-    if (std::abs(angle) <= 0.0001) return false;
+    if (std::abs(angle) == 0) return false;
 
     _intersection_t = dot(normal, offset) / angle;
 
     // intersection behind the viewer;
-    if (_intersection_t < 0) return false;
+    if (_intersection_t <= 0) return false;
 
     _intersection_point = origin + _intersection_t*dir;
     _intersection_normal = normalize(dir - 2*angle*normal);
