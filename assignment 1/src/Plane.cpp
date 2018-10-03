@@ -61,7 +61,7 @@ intersect(const Ray& _ray,
     if (_intersection_t <= 0) return false;
 
     _intersection_point = origin + _intersection_t*dir;
-    _intersection_normal = normalize(dir - 2*angle*normal);
+    _intersection_normal = normal;
 
     return true;
 }

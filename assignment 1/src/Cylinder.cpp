@@ -49,7 +49,6 @@ intersect(const Ray&  _ray,
     // third coefficient
     const double C = dot(b, b) - pow(radius, 2);
 
-
     std::array<double, 2> t;
     size_t nsol = solveQuadratic(A, B, C, t);
     _intersection_t = NO_INTERSECTION;
@@ -65,10 +64,10 @@ intersect(const Ray&  _ray,
 
     const double center_to_intersection = norm(_intersection_point - center);
     const double      h = sqrt(pow(radius, 2) - pow(center_to_intersection, 2));
-    const   vec3 normal = _intersection_point -(center + h*normalize(axis));
-    const double  angle = dot(dir, normal);
+    _intersection_normal = normalize(_intersection_point -(center + h*normalize(axis)));
 
-    _intersection_normal = normalize(dir - 2*angle*normal);
+    const vec3 rename_me = _intersection_point - _intersection_normal;
+    if(std::abs(norm(rename_me - center)))
 
     return true;
 }
