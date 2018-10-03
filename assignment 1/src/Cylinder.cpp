@@ -69,5 +69,12 @@ intersect(const Ray&  _ray,
 
     // const vec3 normal = ???;
 
+    const double c_to_i = norm(_intersection_point - center);
+    const double      h = sqrt(pow(radius, 2) - pow(c_to_i, 2));
+    const   vec3 normal = _intersection_point -(center + h*normalize(axis));
+    const double  angle = dot(dir, normal);
+
+    _intersection_normal = normalize(dir - 2*angle*normal);
+
     return true;
 }
