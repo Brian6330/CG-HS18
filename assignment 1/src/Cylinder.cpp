@@ -57,29 +57,30 @@ intersect(const Ray&  _ray,
     // max distance to cylinder center
     const double MAX_DIST = sqrt(pow(height/2, 2) + pow(radius, 2));
 
-    // Find the closest valid solution (in front of the viewer)
-    for (size_t i = 0; i < nsol; ++i) {
-        if (t[i] > 0) {
-            // check hitting actual cylinder
-            if (norm(origin + t[i]*dir - center) <= MAX_DIST)
-                _intersection_t = std::min(_intersection_t, t[i]);
-        }
-    }
+    bool init = false;
 
-    if (_intersection_t == NO_INTERSECTION) return false;
+	// Find the closest valid solution (in front of the viewer)
+	for (size_t i = 0; i < nsol; ++i) {
+		if (t[i] > 0 && t[i] != NO_INTERSECTION) {
+			// check hitting actual cylinder
+			if (norm(origin + t[i] * dir - center) <= MAX_DIST)
+				_intersection_t = std::min(_intersection_t, t[i]);
+			if (_intersection_t == t[1]) init = true;
+		}
+	}
 
-    // final
-    _intersection_point = origin + _intersection_t*dir;
+	if (_intersection_t == NO_INTERSECTION) return false;
 
-    // calculating normal vector trigonometrically
-    const double center_to_intersection = norm(_intersection_point - center);
-    const double        h = sqrt(pow(radius, 2) - pow(center_to_intersection, 2));
+	// final
+	_intersection_point = _ray(_intersection_t);
 
-    //final
-   _intersection_normal = normalize(_intersection_point -(center + h*normalize(axis)));
+	// calculating normal vector trigonometrically
+	const double center_to_intersection = norm(_intersection_point - center);
+	const double        h = sqrt(pow(center_to_intersection, 2) - pow(radius, 2));
 
-    return true;
+	//final
+	if(init) { _intersection_normal = normalize(_intersection_point - (center + h * normalize(axis))); }
+	else { _intersection_normal = normalize((center + h * normalize(axis)) - _intersection_point); }
 
-    // fixme: if ray enters the inner cylinder, it still uses the outer normal vector. This one should be inverted. 
-
+	return true;
 }
