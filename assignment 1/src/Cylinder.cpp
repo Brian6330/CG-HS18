@@ -57,31 +57,34 @@ intersect(const Ray&  _ray,
     // max distance to cylinder center
     const double MAX_DIST = sqrt(pow(height/2, 2) + pow(radius, 2));
 
-    bool init = false;
-
 	// Find the closest valid solution (in front of the viewer)
 	for (size_t i = 0; i < nsol; ++i) {
-		if (t[i] > 0 && t[i] != NO_INTERSECTION) {
+		if (t[i] > 0) {
 			// check hitting actual cylinder
-			if (norm(origin + t[i] * dir - center) <= MAX_DIST)
+			if (norm(offset + t[i]*dir) <= MAX_DIST)
 				_intersection_t = std::min(_intersection_t, t[i]);
-			if (_intersection_t == t[1]) init = true;
 		}
 	}
 
 	if (_intersection_t == NO_INTERSECTION) return false;
 
 	// final
-	_intersection_point = _ray(_intersection_t);
+	_intersection_point = origin + _intersection_t*dir;
 
 	// calculating normal vector trigonometrically
-	const vec3  &base = center - normalize(axis)*height;
+	const vec3 base = center - axis*height/2;
 	const double base_to_intersection = norm(_intersection_point - base);
-	const double        h = sqrt(pow(base_to_intersection, 2) - pow(radius, 2));
+	const double  h = sqrt(pow(base_to_intersection, 2) - pow(radius, 2));
+
+	// intersection point mapped to cylinder axis
+	const vec3 axis_mapping = base + h*axis;
+	const vec3       normal = _intersection_point - axis_mapping;
 
 	//final
-	if(init) { _intersection_normal = normalize(_intersection_point - (base + h * normalize(axis))); }
-	else { _intersection_normal = normalize((base + h * normalize(axis)) - _intersection_point); }
+	if (dot(normal, dir) < 0)
+	    _intersection_normal = normalize(normal);
+	else
+	    _intersection_normal = normalize(-normal);
 
 	return true;
 }
