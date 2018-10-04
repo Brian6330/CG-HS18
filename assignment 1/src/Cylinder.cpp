@@ -71,15 +71,12 @@ intersect(const Ray&  _ray,
     // final
     _intersection_point = origin + _intersection_t*dir;
 
-    // calculating normal vector trigonometrically
+    // calculating normal vectors trigonometrically
     const double center_to_intersection = norm(_intersection_point - center);
-    const double        h = sqrt(pow(radius, 2) - pow(center_to_intersection, 2));
+    const double h = sqrt(pow(center_to_intersection, 2) - pow(radius, 2));
 
     //final
    _intersection_normal = normalize(_intersection_point -(center + h*normalize(axis)));
 
     return true;
-
-    // fixme: if ray enters the inner cylinder, it still uses the outer normal vector. This one should be inverted. 
-
 }
