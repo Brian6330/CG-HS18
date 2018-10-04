@@ -61,7 +61,7 @@ intersect(const Ray&  _ray,
     for (size_t i = 0; i < nsol; ++i) {
         if (t[i] > 0) {
             // check hitting actual cylinder
-            if (norm(origin + t[i]*dir - center) <= MAX_DIST)
+            if (norm(offset + t[i]*dir) <= MAX_DIST)
                 _intersection_t = std::min(_intersection_t, t[i]);
         }
     }
