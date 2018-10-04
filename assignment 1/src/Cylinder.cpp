@@ -59,7 +59,7 @@ intersect(const Ray&  _ray,
 
     // Find the closest valid solution (in front of the viewer)
     for (size_t i = 0; i < nsol; ++i) {
-        if (t[i] > 0 && t[i] != NO_INTERSECTION) {
+        if (t[i] > 0) {
             // check hitting actual cylinder
             if (norm(origin + t[i]*dir - center) <= MAX_DIST)
                 _intersection_t = std::min(_intersection_t, t[i]);
@@ -71,9 +71,11 @@ intersect(const Ray&  _ray,
     // final
     _intersection_point = origin + _intersection_t*dir;
 
-    // calculating normal vectors
+    // calculating normal vector trigonometrically
     const double center_to_intersection = norm(_intersection_point - center);
     const double        h = sqrt(pow(radius, 2) - pow(center_to_intersection, 2));
+
+    //final
    _intersection_normal = normalize(_intersection_point -(center + h*normalize(axis)));
 
     return true;
