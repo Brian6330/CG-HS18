@@ -75,12 +75,13 @@ intersect(const Ray&  _ray,
 	_intersection_point = _ray(_intersection_t);
 
 	// calculating normal vector trigonometrically
-	const double center_to_intersection = norm(_intersection_point - center);
-	const double        h = sqrt(pow(center_to_intersection, 2) - pow(radius, 2));
+	const vec3  &base = center - normalize(axis)*height;
+	const double base_to_intersection = norm(_intersection_point - base);
+	const double        h = sqrt(pow(base_to_intersection, 2) - pow(radius, 2));
 
 	//final
-	if(init) { _intersection_normal = normalize(_intersection_point - (center + h * normalize(axis))); }
-	else { _intersection_normal = normalize((center + h * normalize(axis)) - _intersection_point); }
+	if(init) { _intersection_normal = normalize(_intersection_point - (base + h * normalize(axis))); }
+	else { _intersection_normal = normalize((base + h * normalize(axis)) - _intersection_point); }
 
 	return true;
 }
