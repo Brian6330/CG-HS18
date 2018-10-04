@@ -67,7 +67,8 @@ intersect(const Ray&  _ray,
     _intersection_normal = normalize(_intersection_point -(center + h*normalize(axis)));
 
     const vec3 rename_me = _intersection_point - _intersection_normal;
-    if(std::abs(norm(rename_me - center)))
+    return std::abs(norm(rename_me - center)) <= height / 2;
 
-    return true;
+    // fixme: if ray enters the inner cylinder, it still uses the outer normal vector. This one should be inverted. 
+
 }
