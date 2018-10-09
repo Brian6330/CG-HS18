@@ -1,7 +1,0 @@
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/CMakeFiles/edit_cache.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/CMakeFiles/doc.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/src/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/src/CMakeFiles/edit_cache.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/src/CMakeFiles/debug_aabb.dir
-/mnt/c/Users/joeft/Onedrive/University/Semester 3/CG/Homework/0/build/linux/src/CMakeFiles/raytrace.dir
