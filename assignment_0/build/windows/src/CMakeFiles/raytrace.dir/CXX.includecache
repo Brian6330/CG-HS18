@@ -1,0 +1,192 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Camera.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Cylinder.cpp
+Cylinder.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Cylinder.h
+SolveQuadratic.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/SolveQuadratic.h
+array
+-
+cmath
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Cylinder.h
+Object.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Image.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+vector
+-
+assert.h
+-
+fstream
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Light.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Material.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Mesh.cpp
+Mesh.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Mesh.h
+fstream
+-
+string
+-
+stdexcept
+-
+limits
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Mesh.h
+Object.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+vector
+-
+string
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+Ray.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Ray.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+Material.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Material.h
+stdexcept
+-
+limits
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Plane.cpp
+Plane.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Plane.h
+limits
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Plane.h
+Object.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Ray.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Scene.cpp
+Scene.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Scene.h
+Plane.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Plane.h
+Sphere.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Sphere.h
+Cylinder.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Cylinder.h
+Mesh.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Mesh.h
+limits
+-
+map
+-
+functional
+-
+stdexcept
+-
+tbb/tbb.h
+-
+tbb/parallel_for.h
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Scene.h
+StopWatch.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/StopWatch.h
+Object.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+Light.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Light.h
+Ray.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Ray.h
+Material.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Material.h
+Image.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Image.h
+Camera.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Camera.h
+memory
+-
+string
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/SolveQuadratic.h
+cmath
+-
+array
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Sphere.cpp
+Sphere.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Sphere.h
+SolveQuadratic.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/SolveQuadratic.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Sphere.h
+Object.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Object.h
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/StopWatch.h
+windows.h
+-
+sys/time.h
+-
+iostream
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/raytrace.cpp
+StopWatch.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/StopWatch.h
+Scene.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/Scene.h
+vector
+-
+iostream
+-
+string
+-
+fstream
+-
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.cpp
+vec3.h
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+
+/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 0/src/vec3.h
+iostream
+-
+assert.h
+-
+math.h
+-
+algorithm
+-
+

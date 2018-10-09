@@ -1,0 +1,33 @@
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" "/mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 1"
+CMake Warning (dev) at /usr/share/cmake-3.7/Modules/FindOpenMP.cmake:179 (if):
+  if given arguments:
+
+    "TRUE"
+
+  An argument named "TRUE" appears in a conditional statement.  Policy
+  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+Call Stack (most recent call first):
+  /usr/share/cmake-3.7/Modules/FindOpenMP.cmake:224 (_OPENMP_GET_SPEC_DATE)
+  CMakeLists.txt:16 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+CMake Warning (dev) at /usr/share/cmake-3.7/Modules/FindOpenMP.cmake:179 (if):
+  if given arguments:
+
+    "TRUE"
+
+  An argument named "TRUE" appears in a conditional statement.  Policy
+  CMP0012 is not set: if() recognizes numbers and boolean constants.  Run
+  "cmake --help-policy CMP0012" for policy details.  Use the cmake_policy
+  command to set the policy and suppress this warning.
+Call Stack (most recent call first):
+  /usr/share/cmake-3.7/Modules/FindOpenMP.cmake:266 (_OPENMP_GET_SPEC_DATE)
+  CMakeLists.txt:16 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Could NOT find TBB (missing:  TBB_INCLUDE_DIR TBB_LIBRARY TBB_LIBRARY_MALLOC) 
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/c/Users/joeft/OneDrive/Git/CG-HS18/assignment 1/cmake-build-debug
