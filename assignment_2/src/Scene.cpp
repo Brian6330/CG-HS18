@@ -144,26 +144,29 @@ vec3 Scene::lighting(const vec3& _point, const vec3& _normal, const vec3& _view,
 	//outgoing light
 	vec3 _outgoing = vec3(0, 0, 0);
 	//diffusion + specular + shadows for all light sources
-	for (size_t i = 0; i < lights.size(); i++) {
-		Object_ptr p;
-		vec3 _p;
-		vec3 _n;
-		double _t;
-		const vec3 _pos = lights[i].position;
-		const vec3 _l = normalize(_pos - _point);
 
-		Ray _ray = Ray(_point + _l * 0.0001, _l);
-		if (intersect(_ray, p, _p, _n, _t) && norm(_p - _point) < norm(_pos - _point)) { //discards light sources that are blocked by objects
-			continue;
-		}
+	Object_ptr object;
+	vec3       point;
+	vec3       normal;
+	double     t;
 
-		const double _n_dot_l = std::max(0.0, dot(_normal, _l));
-		const vec3 _r = 2 * _normal * _n_dot_l - _l;
+	for (Light &light : lights) {
+		const vec3 pos = light.position;
+		const vec3 light_dir = normalize(pos - _point);
+		const Ray ray = Ray(_point + light_dir * 0.001, light_dir);
+
+		// discard light sources blocked by objects
+		if (intersect(ray, object, point, normal, t) && t < norm(pos - _point)) continue;
+
+		const double angle_normal = std::max(0.0, dot(_normal, light_dir));
+		const vec3 reflection = 2 * angle_normal * _normal - light_dir;
+
 		//phong formula
-		_outgoing += lights[i].color * (_material.diffuse*_n_dot_l + //diffuse
-			_material.specular * pow(std::max(0.0, dot(_r, _view)), _material.shininess)); //specular
+		_outgoing += light.color * (_material.diffuse * angle_normal
+				+ _material.specular * pow(std::max(0.0, dot(reflection, _view)), _material.shininess));
 	}
-	return _outgoing + _amb_light;
+
+	return _amb_light + _outgoing;
 }
 
 //-----------------------------------------------------------------------------
