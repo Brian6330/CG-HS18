@@ -1,0 +1,5 @@
+CMake executable is incorrect Configure
+
+Cannot get compiler information:
+	Error connecting to remote host localhost: Connection refused: connect
+	Error connecting to remote host localhost: Connection refused: connect
