@@ -15,6 +15,7 @@
 #include <string>
 #include <stdexcept>
 #include <limits>
+#include <array>
 
 
 //== IMPLEMENTATION ===========================================================
@@ -22,18 +23,18 @@
 
 Mesh::Mesh(std::istream &is, const std::string &scenePath)
 {
-    std::string meshFile, mode;
-    is >> meshFile;
+	std::string meshFile, mode;
+	is >> meshFile;
 
-    // load mesh from file
-    read(scenePath.substr(0, scenePath.find_last_of('/') + 1) + meshFile);
+	// load mesh from file
+	read(scenePath.substr(0, scenePath.find_last_of('/') + 1) + meshFile);
 
-    is >> mode;
-    if      (mode ==  "FLAT") draw_mode_ = FLAT;
-    else if (mode == "PHONG") draw_mode_ = PHONG;
-    else throw std::runtime_error("Invalid draw mode " + mode);
+	is >> mode;
+	if      (mode ==  "FLAT") draw_mode_ = FLAT;
+	else if (mode == "PHONG") draw_mode_ = PHONG;
+	else throw std::runtime_error("Invalid draw mode " + mode);
 
-    is >> material;
+	is >> material;
 }
 
 
@@ -42,65 +43,65 @@ Mesh::Mesh(std::istream &is, const std::string &scenePath)
 
 bool Mesh::read(const std::string &_filename)
 {
-    // read a mesh in OFF format
+	// read a mesh in OFF format
 
 
-    // open file
-    std::ifstream ifs(_filename);
-    if (!ifs)
-    {
-        std::cerr << "Can't open " << _filename << "\n";
-        return false;
-    }
+	// open file
+	std::ifstream ifs(_filename);
+	if (!ifs)
+	{
+		std::cerr << "Can't open " << _filename << "\n";
+		return false;
+	}
 
 
-    // read OFF header
-    std::string s;
-    unsigned int nV, nF, dummy, i;
-    ifs >> s;
-    if (s != "OFF")
-    {
-        std::cerr << "No OFF file\n";
-        return false;
-    }
-    ifs >> nV >> nF >> dummy;
-    std::cout << "\n  read " << _filename << ": " << nV << " vertices, " << nF << " triangles";
+	// read OFF header
+	std::string s;
+	unsigned int nV, nF, dummy, i;
+	ifs >> s;
+	if (s != "OFF")
+	{
+		std::cerr << "No OFF file\n";
+		return false;
+	}
+	ifs >> nV >> nF >> dummy;
+	std::cout << "\n  read " << _filename << ": " << nV << " vertices, " << nF << " triangles";
 
 
-    // read vertices
-    Vertex v;
-    vertices_.clear();
-    vertices_.reserve(nV);
-    for (i=0; i<nV; ++i)
-    {
-        ifs >> v.position;
-        vertices_.push_back(v);
-    }
+	// read vertices
+	Vertex v;
+	vertices_.clear();
+	vertices_.reserve(nV);
+	for (i=0; i<nV; ++i)
+	{
+		ifs >> v.position;
+		vertices_.push_back(v);
+	}
 
 
-    // read triangles
-    Triangle t;
-    triangles_.clear();
-    triangles_.reserve(nF);
-    for (i=0; i<nF; ++i)
-    {
-        ifs >> dummy >> t.i0 >> t.i1 >> t.i2;
-        triangles_.push_back(t);
-    }
+	// read triangles
+	Triangle t;
+	triangles_.clear();
+	triangles_.reserve(nF);
+	for (i=0; i<nF; ++i)
+	{
+		ifs >> dummy >> t.i0 >> t.i1 >> t.i2;
+		triangles_.push_back(t);
+	}
 
 
-    // close file
-    ifs.close();
+	// close file
+	ifs.close();
 
 
-    // compute face and vertex normals
-    compute_normals();
+	// compute face and vertex normals
+	compute_normals();
 
-    // compute bounding box
-    compute_bounding_box();
+	// compute bounding box
+	compute_bounding_box();
 
 
-    return true;
+	return true;
 }
 
 
@@ -114,13 +115,13 @@ bool Mesh::read(const std::string &_filename)
 // \param[out] w0, w1, w2    weights to be used for vertices 0, 1, and 2
 void angleWeights(const vec3 &p0, const vec3 &p1, const vec3 &p2,
                   double &w0, double &w1, double &w2) {
-    // compute angle weights
-    const vec3 e01 = normalize(p1-p0);
-    const vec3 e12 = normalize(p2-p1);
-    const vec3 e20 = normalize(p0-p2);
-    w0 = acos( std::max(-1.0, std::min(1.0, dot(e01, -e20) )));
-    w1 = acos( std::max(-1.0, std::min(1.0, dot(e12, -e01) )));
-    w2 = acos( std::max(-1.0, std::min(1.0, dot(e20, -e12) )));
+	// compute angle weights
+	const vec3 e01 = normalize(p1-p0);
+	const vec3 e12 = normalize(p2-p1);
+	const vec3 e20 = normalize(p0-p2);
+	w0 = acos( std::max(-1.0, std::min(1.0, dot(e01, -e20) )));
+	w1 = acos( std::max(-1.0, std::min(1.0, dot(e12, -e01) )));
+	w2 = acos( std::max(-1.0, std::min(1.0, dot(e20, -e12) )));
 }
 
 
@@ -128,29 +129,33 @@ void angleWeights(const vec3 &p0, const vec3 &p1, const vec3 &p2,
 
 void Mesh::compute_normals()
 {
-    // compute triangle normals
-    for (Triangle& t: triangles_)
-    {
-        const vec3& p0 = vertices_[t.i0].position;
-        const vec3& p1 = vertices_[t.i1].position;
-        const vec3& p2 = vertices_[t.i2].position;
-        t.normal = normalize(cross(p1-p0, p2-p0));
-    }
+	// initialize vertex normals to zero
+	for (Vertex& v: vertices_)
+	{
+		v.normal = vec3(0,0,0);
+	}
 
-    // initialize vertex normals to zero
-    for (Vertex& v: vertices_)
-    {
-        v.normal = vec3(0,0,0);
-    }
+	// compute triangle normals
+	// compute vertex normals
+	for (Triangle& t : triangles_)
+	{
+		const vec3& p0 = vertices_[t.i0].position;
+		const vec3& p1 = vertices_[t.i1].position;
+		const vec3& p2 = vertices_[t.i2].position;
+		t.normal = normalize(cross(p1-p0, p2-p0));
 
-    /** \todo
-     * In some scenes (e.g the office scene) some objects should be flat
-     * shaded (e.g. the desk) while other objects should be Phong shaded to appear
-     * realistic (e.g. chairs). You have to implement the following:
-     * - Compute vertex normals by averaging the normals of their incident triangles.
-     * - Store the vertex normals in the Vertex::normal member variable.
-     * - Weigh the normals by their triangles' angles.
-     */
+		double w0=0, w1=0, w2=0;
+		Vertex& v0 = vertices_[t.i0], v1 = vertices_[t.i1], v2 = vertices_[t.i2];
+		angleWeights(v0.position, v1.position, v2.position, w0, w1, w2);
+
+		v0.normal += w0*t.normal;
+		v1.normal += w1*t.normal;
+		v2.normal += w2*t.normal;
+	}
+
+	for (Vertex& v : vertices_) {
+		v.normal = normalize(v.normal);
+	}
 }
 
 
@@ -159,14 +164,14 @@ void Mesh::compute_normals()
 
 void Mesh::compute_bounding_box()
 {
-    bb_min_ = vec3(std::numeric_limits<double>::max());
-    bb_max_ = vec3(std::numeric_limits<double>::lowest());
+	bb_min_ = vec3(std::numeric_limits<double>::max());
+	bb_max_ = vec3(std::numeric_limits<double>::lowest());
 
-    for (Vertex v: vertices_)
-    {
-        bb_min_ = min(bb_min_, v.position);
-        bb_max_ = max(bb_max_, v.position);
-    }
+	for (Vertex v: vertices_)
+	{
+		bb_min_ = min(bb_min_, v.position);
+		bb_max_ = max(bb_max_, v.position);
+	}
 }
 
 
@@ -176,17 +181,17 @@ void Mesh::compute_bounding_box()
 bool Mesh::intersect_bounding_box(const Ray& _ray) const
 {
 
-    /** \todo
-    * Intersect the ray `_ray` with the axis-aligned bounding box of the mesh.
-    * Note that the minimum and maximum point of the bounding box are stored
-    * in the member variables `bb_min_` and `bb_max_`. Return whether the ray
-    * intersects the bounding box.
-    * This function is ued in `Mesh::intersect()` to avoid the intersection test
-    * with all triangles of every mesh in the scene. The bounding boxes are computed
-    * in `Mesh::compute_bounding_box()`.
-    */
+	/** \todo
+	* Intersect the ray `_ray` with the axis-aligned bounding box of the mesh.
+	* Note that the minimum and maximum point of the bounding box are stored
+	* in the member variables `bb_min_` and `bb_max_`. Return whether the ray
+	* intersects the bounding box.
+	* This function is ued in `Mesh::intersect()` to avoid the intersection test
+	* with all triangles of every mesh in the scene. The bounding boxes are computed
+	* in `Mesh::compute_bounding_box()`.
+	*/
 
-    return true;
+	return true;
 }
 
 
@@ -198,35 +203,35 @@ bool Mesh::intersect(const Ray& _ray,
                      vec3&      _intersection_normal,
                      double&    _intersection_t ) const
 {
-    // check bounding box intersection
-    if (!intersect_bounding_box(_ray))
-    {
-        return false;
-    }
+	// check bounding box intersection
+	if (!intersect_bounding_box(_ray))
+	{
+		return false;
+	}
 
-    vec3   p, n;
-    double t;
+	vec3   p, n;
+	double t;
 
-    _intersection_t = NO_INTERSECTION;
+	_intersection_t = NO_INTERSECTION;
 
-    // for each triangle
-    for (const Triangle& triangle : triangles_)
-    {
-        // does ray intersect triangle?
-        if (intersect_triangle(triangle, _ray, p, n, t))
-        {
-            // is intersection closer than previous intersections?
-            if (t < _intersection_t)
-            {
-                // store data of this intersection
-                _intersection_t      = t;
-                _intersection_point  = p;
-                _intersection_normal = n;
-            }
-        }
-    }
+	// for each triangle
+	for (const Triangle& triangle : triangles_)
+	{
+		// does ray intersect triangle?
+		if (intersect_triangle(triangle, _ray, p, n, t))
+		{
+			// is intersection closer than previous intersections?
+			if (t < _intersection_t)
+			{
+				// store data of this intersection
+				_intersection_t      = t;
+				_intersection_point  = p;
+				_intersection_normal = n;
+			}
+		}
+	}
 
-    return (_intersection_t != NO_INTERSECTION);
+	return (_intersection_t != NO_INTERSECTION);
 }
 
 
@@ -241,25 +246,46 @@ intersect_triangle(const Triangle&  _triangle,
                    vec3&            _intersection_normal,
                    double&          _intersection_t) const
 {
-    const vec3& p0 = vertices_[_triangle.i0].position;
-    const vec3& p1 = vertices_[_triangle.i1].position;
-    const vec3& p2 = vertices_[_triangle.i2].position;
+	const vec3& p0 = vertices_[_triangle.i0].position;
+	const vec3& p1 = vertices_[_triangle.i1].position;
+	const vec3& p2 = vertices_[_triangle.i2].position;
 
-    /** \todo
-    * - intersect _ray with _triangle
-    * - store intersection point in `_intersection_point`
-    * - store ray parameter in `_intersection_t`
-    * - store normal at intersection point in `_intersection_normal`.
-    * - Depending on the member variable `draw_mode_`, use either the triangle
-    *  normal (`Triangle::normal`) or interpolate the vertex normals (`Vertex::normal`).
-    * - return `true` if there is an intersection with t > 0 (in front of the viewer)
-    *
-    * Hint: Rearrange `ray.origin + t*ray.dir = a*p0 + b*p1 + (1-a-b)*p2` to obtain a solvable
-    * system for a, b and t.
-    * Refer to [Cramer's Rule](https://en.wikipedia.org/wiki/Cramer%27s_rule) to easily solve it.
-     */
+	const vec3& dir = _ray.direction;
 
-    return false;
+	vec3 edge1 = p1-p0;
+	vec3 edge2 = p2-p0;
+
+	vec3 plane_vec = cross(dir, edge2);
+	const double det = dot(edge1, plane_vec);
+
+	// behind viewer or parallel
+	if (fabs(det) > std::numeric_limits<double>::min()) return false;
+
+	const double det_inv = 1.0 / det;
+
+	vec3 tvec = _ray.origin - p0;
+	double hitbox_norm_edge2 = dot(tvec, plane_vec) * det_inv;
+
+	// hitting normalized hitbox
+	if (hitbox_norm_edge2 < 0.0 || hitbox_norm_edge2 > 1.0) return false;
+
+	vec3 qvec = cross(tvec, edge1);
+	double hitbox_norm_edge1 = dot(dir, qvec) * det_inv;
+
+	// hitting normalized hitbox
+	// limited to edge3 hitbox
+	if (hitbox_norm_edge1 < 0 || hitbox_norm_edge1+hitbox_norm_edge2 > 1) return false;
+
+	_intersection_t = dot(edge2, qvec) * det_inv;
+	_intersection_point = _ray.origin + dir * _intersection_t;
+
+
+	_intersection_normal = cross(edge1, edge2);
+	if (dot(_intersection_normal, dir) < 0)
+		_intersection_normal *= -1.0;
+
+	return true;
+
 }
 
 
