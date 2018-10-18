@@ -228,10 +228,8 @@ bool Mesh::intersect_bounding_box(const Ray& _ray) const
 		tzmax = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
 	}
 
-	if ((tmin > tzmax) || (tzmin > tmax))
-		return false;
+	return !((tmin > tzmax) || (tzmin > tmax));
 
-	return true;
 }
 
 
