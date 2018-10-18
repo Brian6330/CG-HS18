@@ -190,7 +190,7 @@ bool Mesh::intersect_bounding_box(const Ray& _ray) const
     * with all triangles of every mesh in the scene. The bounding boxes are computed
     * in `Mesh::compute_bounding_box()`.
     */
-	float tmin=0, tmax=0, tymin=0, tymax=0, tzmin=0, tzmax=0;
+	double tmin=0, tmax=0, tymin=0, tymax=0, tzmin=0, tzmax=0;
 
 	if (_ray.direction[0] >= 0) {
 		tmin = (bb_min_[0] - _ray.origin[0]) / _ray.direction[0];
@@ -228,10 +228,8 @@ bool Mesh::intersect_bounding_box(const Ray& _ray) const
 		tzmax = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
 	}
 
-	if ((tmin > tzmax) || (tzmin > tmax))
-		return false;
+	return !((tmin > tzmax) || (tzmin > tmax));
 
-	return true;
 }
 
 
