@@ -153,12 +153,11 @@ void Mesh::compute_normals()
 		t.normal = normalize(cross(p1 - p0, p2 - p0));
 
 		double w0 = 0, w1 = 0, w2 = 0;
-		Vertex& v0 = vertices_[t.i0], v1 = vertices_[t.i1], v2 = vertices_[t.i2];
-		angleWeights(v0.position, v1.position, v2.position, w0, w1, w2);
+		angleWeights(vertices_[t.i0].position, vertices_[t.i1].position, vertices_[t.i2].position, w0, w1, w2);
 
-		v0.normal += w0 * t.normal;
-		v1.normal += w1 * t.normal;
-		v2.normal += w2 * t.normal;
+		vertices_[t.i0].normal += w0 * t.normal;
+		vertices_[t.i1].normal += w1 * t.normal;
+		vertices_[t.i2].normal += w2 * t.normal;
 	}
 
 	for (Vertex& v : vertices_) {
@@ -323,21 +322,29 @@ intersect_triangle(const Triangle&  _triangle,
 	
 	double det = getDet(p0 - p2, p1 - p2, -dir);
 	double det_a = getDet(o - p2, p1 - p2, -dir);
-	double det_b = getDet(p0 - p2, o - p2, -dir);
-	double det_t = getDet(p0 - p2, p1 - p2, o - p2);
-
 	double a = det_a / det;
+	if (a < 0) return false;
+
+	double det_b = getDet(p0 - p2, o - p2, -dir);
 	double b = det_b / det;
+	double c = 1 - a - b;
+	if (b < 0 || c < 0) return false;
+
+	double det_t = getDet(p0 - p2, p1 - p2, o - p2);
 	_intersection_t = det_t / det;
 
-	if (a < 0 || b < 0 || (1 - a - b) < 0 || _intersection_t < 0) return false;
+	if (_intersection_t < 0) return false;
 
 	_intersection_point = o + dir * _intersection_t;
 	if (draw_mode_ == FLAT) {
 		_intersection_normal = _triangle.normal;
 	}
 	else {
-		_intersection_normal = normalize(a * vertices_[_triangle.i0].normal + b * vertices_[_triangle.i1].normal + (1 - a - b) * vertices_[_triangle.i2].normal);
+		_intersection_normal = normalize(
+			a * vertices_[_triangle.i0].normal +
+			b * vertices_[_triangle.i1].normal +
+			c * vertices_[_triangle.i2].normal
+		);
 	}
 
 	return true;
