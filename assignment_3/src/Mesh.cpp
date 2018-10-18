@@ -181,15 +181,55 @@ void Mesh::compute_bounding_box()
 bool Mesh::intersect_bounding_box(const Ray& _ray) const
 {
 
-	/** \todo
-	* Intersect the ray `_ray` with the axis-aligned bounding box of the mesh.
-	* Note that the minimum and maximum point of the bounding box are stored
-	* in the member variables `bb_min_` and `bb_max_`. Return whether the ray
-	* intersects the bounding box.
-	* This function is ued in `Mesh::intersect()` to avoid the intersection test
-	* with all triangles of every mesh in the scene. The bounding boxes are computed
-	* in `Mesh::compute_bounding_box()`.
-	*/
+    /** \todo
+    * Intersect the ray `_ray` with the axis-aligned bounding box of the mesh.
+    * Note that the minimum and maximum point of the bounding box are stored
+    * in the member variables `bb_min_` and `bb_max_`. Return whether the ray
+    * intersects the bounding box.
+    * This function is ued in `Mesh::intersect()` to avoid the intersection test
+    * with all triangles of every mesh in the scene. The bounding boxes are computed
+    * in `Mesh::compute_bounding_box()`.
+    */
+	float tmin=0, tmax=0, tymin=0, tymax=0, tzmin=0, tzmax=0;
+
+	if (_ray.direction[0] >= 0) {
+		tmin = (bb_min_[0] - _ray.origin[0]) / _ray.direction[0];
+		tmax = (bb_max_[0] - _ray.origin[0]) / _ray.direction[0];
+	}
+	else {
+		tmin = (bb_max_[0] - _ray.origin[0]) / _ray.direction[0];
+		tmax = (bb_min_[0] - _ray.origin[0]) / _ray.direction[0];
+	}
+
+	if (_ray.direction[1] >= 0) {
+		tymin = (bb_min_[1] - _ray.origin[1]) / _ray.direction[1];
+		tymax = (bb_max_[1] - _ray.origin[1]) / _ray.direction[1];
+	}
+	else {
+		tymin = (bb_max_[1] - _ray.origin[1]) / _ray.direction[1];
+		tymax = (bb_min_[1] - _ray.origin[1]) / _ray.direction[1];
+	}
+
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
+
+	if (tymin > tmin)
+		tmin = tymin;
+
+	if (tymax < tmax)
+		tmax = tymax;
+
+	if (_ray.direction[2] >= 0) {
+		tzmin = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
+		tzmax = (bb_max_[2] - _ray.origin[2]) / _ray.direction[2];
+	}
+	else {
+		tmin = (bb_max_[2] - _ray.origin[2]) / _ray.direction[2];
+		tmax = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
+	}
+
+	if ((tmin > tzmax) || (tzmin > tmax))
+		return false;
 
 	return true;
 }
