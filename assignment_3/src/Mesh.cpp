@@ -134,17 +134,8 @@ void Mesh::compute_normals()
         v.normal = vec3(0,0,0);
     }
 
-    /** \todo
-     * In some scenes (e.g the office scene) some objects should be flat
-     * shaded (e.g. the desk) while other objects should be Phong shaded to appear
-     * realistic (e.g. chairs). You have to implement the following:
-     * - Compute vertex normals by averaging the normals of their incident triangles.
-     * - Store the vertex normals in the Vertex::normal member variable.
-     * - Weigh the normals by their triangles' angles.
-     */
-
 	 // compute triangle normals
-	  // compute vertex normals
+	 // compute vertex normals
 	for (Triangle& t : triangles_)
 	{
 		const vec3& p0 = vertices_[t.i0].position;
@@ -235,10 +226,8 @@ bool Mesh::intersect_bounding_box(const Ray& _ray) const
 		tzmax = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
 	}
 
-	if ((tmin > tzmax) || (tzmin > tmax))
-		return false;
+	return !((tmin > tzmax) || (tzmin > tmax));
 
-	return true;
 }
 
 
@@ -284,9 +273,10 @@ bool Mesh::intersect(const Ray& _ray,
 
 //-----------------------------------------------------------------------------
 
-double getDet(const vec3& p0, const vec3& p1, const vec3& p2) {
-	double a = p0[0], b = p1[0], c = p2[0], d = p0[1], e = p1[1], f = p2[1], g = p0[2], h = p1[2], i = p2[2];
-	return a * (e*i - h*f) - b * (d*i - g*f) + c * (d*h - g*e);
+/** Return the determinant of the 3x3 matrix ( a b c ).
+ */
+inline double det(const vec3 &a, const vec3 &b, const vec3 &c) {
+	return dot(cross(a,b),c);
 }
 
 bool
@@ -297,54 +287,56 @@ intersect_triangle(const Triangle&  _triangle,
 	vec3&            _intersection_normal,
 	double&          _intersection_t) const
 {
-	/** \todo
-	* - intersect _ray with _triangle
-	* - store intersection point in `_intersection_point`
-	* - store ray parameter in `_intersection_t`
-	* - store normal at intersection point in `_intersection_normal`.
-	* - Depending on the member variable `draw_mode_`, use either the triangle
-	*  normal (`Triangle::normal`) or interpolate the vertex normals (`Vertex::normal`).
-	* - return `true` if there is an intersection with t > 0 (in front of the viewer)
-	*
-	* Hint: Rearrange `ray.origin + t*ray.dir = a*p0 + b*p1 + (1-a-b)*p2` to obtain a solvable
-	* system for a, b and t.
-	* Refer to [Cramer's Rule](https://en.wikipedia.org/wiki/Cramer%27s_rule) to easily solve it.
-	 */
-
-	vec3 int_p = vec3(0, 0, 0);
-
 	const vec3& p0 = vertices_[_triangle.i0].position;
 	const vec3& p1 = vertices_[_triangle.i1].position;
 	const vec3& p2 = vertices_[_triangle.i2].position;
 
-	const vec3& dir = _ray.direction;
-	const vec3& o = _ray.origin;
-	
-	double det = getDet(p0 - p2, p1 - p2, -dir);
-	double det_a = getDet(o - p2, p1 - p2, -dir);
-	double a = det_a / det;
-	if (a < 0) return false;
 
-	double det_b = getDet(p0 - p2, o - p2, -dir);
-	double b = det_b / det;
-	double c = 1 - a - b;
-	if (b < 0 || c < 0) return false;
+	// solve ray.origin + t*ray.dir = a*p0 + b*p1 + (1-a-b)*p2
+	// rearrange to get a 3x3 system A * x = b
+	// solve it using Cramer's rule
 
-	double det_t = getDet(p0 - p2, p1 - p2, o - p2);
-	_intersection_t = det_t / det;
+	// columns of the matrix
+	vec3 a1 = -_ray.direction;
+	vec3 a2 = p1-p0;
+	vec3 a3 = p2-p0;
 
-	if (_intersection_t < 0) return false;
+	// right hand side of linear system
+	vec3  b = _ray.origin - p0;
 
-	_intersection_point = o + dir * _intersection_t;
-	if (draw_mode_ == FLAT) {
-		_intersection_normal = _triangle.normal;
-	}
-	else {
-		_intersection_normal = normalize(
-			a * vertices_[_triangle.i0].normal +
-			b * vertices_[_triangle.i1].normal +
-			c * vertices_[_triangle.i2].normal
-		);
+	const double denom = det(a1, a2, a3);
+	if (fabs(denom) <= std::numeric_limits<double>::lowest()) return false;
+
+	const double beta = det(a1, b, a3) / denom;
+	if (beta < 0.0 || beta > 1.0) return false;
+
+	const double gamma = det(a1, a2, b) / denom;
+	if (gamma < 0.0 || beta+gamma > 1.0) return false;
+
+	const double alpha = 1.0 - beta - gamma;
+
+	double t = det(b, a2, a3) / denom;
+	if (t <= 0) return false;
+
+	_intersection_t      = t;
+	_intersection_point  = _ray(t);
+
+	switch (draw_mode_)
+	{
+		case FLAT:
+		{
+			_intersection_normal = _triangle.normal;
+			break;
+		}
+
+		case PHONG:
+		{
+			const vec3& n0 = vertices_[_triangle.i0].normal;
+			const vec3& n1 = vertices_[_triangle.i1].normal;
+			const vec3& n2 = vertices_[_triangle.i2].normal;
+			_intersection_normal = normalize(n0*alpha + n1*beta + n2*gamma);
+			break;
+		}
 	}
 
 	return true;
