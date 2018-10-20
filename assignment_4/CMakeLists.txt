@@ -40,6 +40,8 @@ endif()
 # Attempt to find the system's GLFW; build the included one if unsuccessful
 find_package(glfw3 QUIET)
 if (glfw3_FOUND)
+  # force using new version instead of legacy (Xubuntu Core)
+  cmake_policy(SET CMP0072 NEW)
   MESSAGE("Using system GLFW")
   # Note: target_link_libraries(glfw) performed in src/CMakeLists.txt should
   # actually bring in the necessary header files.
