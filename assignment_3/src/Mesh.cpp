@@ -128,32 +128,41 @@ void angleWeights(const vec3 &p0, const vec3 &p1, const vec3 &p2,
 
 void Mesh::compute_normals()
 {
+    // compute triangle normals
+    for (Triangle& t: triangles_)
+    {
+        const vec3& p0 = vertices_[t.i0].position;
+        const vec3& p1 = vertices_[t.i1].position;
+        const vec3& p2 = vertices_[t.i2].position;
+        t.normal = normalize(cross(p1-p0, p2-p0));
+    }
+
     // initialize vertex normals to zero
     for (Vertex& v: vertices_)
     {
         v.normal = vec3(0,0,0);
     }
 
-	 // compute triangle normals
-	 // compute vertex normals
-	for (Triangle& t : triangles_)
-	{
-		const vec3& p0 = vertices_[t.i0].position;
-		const vec3& p1 = vertices_[t.i1].position;
-		const vec3& p2 = vertices_[t.i2].position;
-		t.normal = normalize(cross(p1 - p0, p2 - p0));
+    // compute triangle normals and add them to vertices
+    for (Triangle& t: triangles_)
+    {
+        double w0, w1, w2;
+        angleWeights(vertices_[t.i0].position,
+                     vertices_[t.i1].position,
+                     vertices_[t.i2].position,
+                     w0, w1, w2);
 
-		double w0 = 0, w1 = 0, w2 = 0;
-		angleWeights(vertices_[t.i0].position, vertices_[t.i1].position, vertices_[t.i2].position, w0, w1, w2);
+        // scatter face normals to vertex normals
+        vertices_[t.i0].normal += w0 * t.normal;
+        vertices_[t.i1].normal += w1 * t.normal;
+        vertices_[t.i2].normal += w2 * t.normal;
+    }
 
-		vertices_[t.i0].normal += w0 * t.normal;
-		vertices_[t.i1].normal += w1 * t.normal;
-		vertices_[t.i2].normal += w2 * t.normal;
-	}
-
-	for (Vertex& v : vertices_) {
-		v.normal = normalize(v.normal);
-	}
+    // normalize vertex normals
+    for (Vertex& v: vertices_)
+    {
+        v.normal = normalize(v.normal);
+    }
 }
 
 
@@ -179,55 +188,35 @@ void Mesh::compute_bounding_box()
 bool Mesh::intersect_bounding_box(const Ray& _ray) const
 {
 
-    /** \todo
-    * Intersect the ray `_ray` with the axis-aligned bounding box of the mesh.
-    * Note that the minimum and maximum point of the bounding box are stored
-    * in the member variables `bb_min_` and `bb_max_`. Return whether the ray
-    * intersects the bounding box.
-    * This function is ued in `Mesh::intersect()` to avoid the intersection test
-    * with all triangles of every mesh in the scene. The bounding boxes are computed
-    * in `Mesh::compute_bounding_box()`.
-    */
-	double tmin=0, tmax=0, tymin=0, tymax=0, tzmin=0, tzmax=0;
+    double t_min = 0.f;
+    double t_max = std::numeric_limits<double>::infinity();
 
-	if (_ray.direction[0] >= 0) {
-		tmin = (bb_min_[0] - _ray.origin[0]) / _ray.direction[0];
-		tmax = (bb_max_[0] - _ray.origin[0]) / _ray.direction[0];
-	}
-	else {
-		tmin = (bb_max_[0] - _ray.origin[0]) / _ray.direction[0];
-		tmax = (bb_min_[0] - _ray.origin[0]) / _ray.direction[0];
-	}
+    for (int i=0; i<3; ++i)
+    {
+        const double div = 1.0/_ray.direction[i];
 
-	if (_ray.direction[1] >= 0) {
-		tymin = (bb_min_[1] - _ray.origin[1]) / _ray.direction[1];
-		tymax = (bb_max_[1] - _ray.origin[1]) / _ray.direction[1];
-	}
-	else {
-		tymin = (bb_max_[1] - _ray.origin[1]) / _ray.direction[1];
-		tymax = (bb_min_[1] - _ray.origin[1]) / _ray.direction[1];
-	}
+        // intersect ray with min/max slab plane
+        double t1 = (bb_min_[i] - _ray.origin[i]) * div;
+        double t2 = (bb_max_[i] - _ray.origin[i]) * div;
 
-	if ((tmin > tymax) || (tymin > tmax))
-		return false;
+        // note the special case when direction[i] = 0
+        // => t1 and t2 will become -inf and inf if 0 is in the slab,
+        // inf & inf or -inf & -inf if it is outside
 
-	if (tymin > tmin)
-		tmin = tymin;
+        if (t1 > t2) {
+            std::swap(t1, t2);
+        }
 
-	if (tymax < tmax)
-		tmax = tymax;
+        t_min = std::fmax(t_min, t1);
+        t_max = std::fmin(t_max, t2);
 
-	if (_ray.direction[2] >= 0) {
-		tzmin = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
-		tzmax = (bb_max_[2] - _ray.origin[2]) / _ray.direction[2];
-	}
-	else {
-		tzmin = (bb_max_[2] - _ray.origin[2]) / _ray.direction[2];
-		tzmax = (bb_min_[2] - _ray.origin[2]) / _ray.direction[2];
-	}
+        // check for valid intersection
+        if (t_min > t_max) {
+            return false;
+        }
+    }
 
-	return !((tmin > tzmax) || (tzmin > tmax));
-
+    return true;
 }
 
 
@@ -276,70 +265,70 @@ bool Mesh::intersect(const Ray& _ray,
 /** Return the determinant of the 3x3 matrix ( a b c ).
  */
 inline double det(const vec3 &a, const vec3 &b, const vec3 &c) {
-	return dot(cross(a,b),c);
+    return dot(cross(a,b),c);
 }
 
 bool
 Mesh::
 intersect_triangle(const Triangle&  _triangle,
-	const Ray&       _ray,
-	vec3&            _intersection_point,
-	vec3&            _intersection_normal,
-	double&          _intersection_t) const
+                   const Ray&       _ray,
+                   vec3&            _intersection_point,
+                   vec3&            _intersection_normal,
+                   double&          _intersection_t) const
 {
-	const vec3& p0 = vertices_[_triangle.i0].position;
-	const vec3& p1 = vertices_[_triangle.i1].position;
-	const vec3& p2 = vertices_[_triangle.i2].position;
+    const vec3& p0 = vertices_[_triangle.i0].position;
+    const vec3& p1 = vertices_[_triangle.i1].position;
+    const vec3& p2 = vertices_[_triangle.i2].position;
 
 
-	// solve ray.origin + t*ray.dir = a*p0 + b*p1 + (1-a-b)*p2
-	// rearrange to get a 3x3 system A * x = b
-	// solve it using Cramer's rule
+    // solve ray.origin + t*ray.dir = a*p0 + b*p1 + (1-a-b)*p2
+    // rearrange to get a 3x3 system A * x = b
+    // solve it using Cramer's rule
 
-	// columns of the matrix
-	vec3 a1 = -_ray.direction;
-	vec3 a2 = p1-p0;
-	vec3 a3 = p2-p0;
+    // columns of the matrix
+    vec3 a1 = -_ray.direction;
+    vec3 a2 = p1-p0;
+    vec3 a3 = p2-p0;
 
-	// right hand side of linear system
-	vec3  b = _ray.origin - p0;
+    // right hand side of linear system
+    vec3  b = _ray.origin - p0;
 
-	const double denom = det(a1, a2, a3);
-	if (fabs(denom) <= std::numeric_limits<double>::lowest()) return false;
+    const double denom = det(a1, a2, a3);
+    if (fabs(denom) <= std::numeric_limits<double>::lowest()) return false;
 
-	const double beta = det(a1, b, a3) / denom;
-	if (beta < 0.0 || beta > 1.0) return false;
+    const double beta = det(a1, b, a3) / denom;
+    if (beta < 0.0 || beta > 1.0) return false;
 
-	const double gamma = det(a1, a2, b) / denom;
-	if (gamma < 0.0 || beta+gamma > 1.0) return false;
+    const double gamma = det(a1, a2, b) / denom;
+    if (gamma < 0.0 || beta+gamma > 1.0) return false;
 
-	const double alpha = 1.0 - beta - gamma;
+    const double alpha = 1.0 - beta - gamma;
 
-	double t = det(b, a2, a3) / denom;
-	if (t <= 0) return false;
+    double t = det(b, a2, a3) / denom;
+    if (t <= 0) return false;
 
-	_intersection_t      = t;
-	_intersection_point  = _ray(t);
+    _intersection_t      = t;
+    _intersection_point  = _ray(t);
 
-	switch (draw_mode_)
-	{
-		case FLAT:
-		{
-			_intersection_normal = _triangle.normal;
-			break;
-		}
+    switch (draw_mode_)
+    {
+        case FLAT:
+        {
+            _intersection_normal = _triangle.normal;
+            break;
+        }
 
-		case PHONG:
-		{
-			const vec3& n0 = vertices_[_triangle.i0].normal;
-			const vec3& n1 = vertices_[_triangle.i1].normal;
-			const vec3& n2 = vertices_[_triangle.i2].normal;
-			_intersection_normal = normalize(n0*alpha + n1*beta + n2*gamma);
-			break;
-		}
-	}
+        case PHONG:
+        {
+            const vec3& n0 = vertices_[_triangle.i0].normal;
+            const vec3& n1 = vertices_[_triangle.i1].normal;
+            const vec3& n2 = vertices_[_triangle.i2].normal;
+            _intersection_normal = normalize(n0*alpha + n1*beta + n2*gamma);
+            break;
+        }
+    }
 
-	return true;
+    return true;
 }
 
 
