@@ -59,7 +59,7 @@ public class Scene {
 		Image img = new Image(camera.getWidth(), camera.getHeight());
 
 		// function rendering a full column of the image
-		SingleArgMethod raytraceColumn = (int x) -> {
+		ThreadScheduler.Function raytraceColumn = (int x) -> {
 			for (int y = 0; y < camera.getHeight(); y++) {
 				Ray ray = camera.primary_ray(x, y);
 
@@ -75,8 +75,10 @@ public class Scene {
 			}
 		};
 
-		for (int x = 0; x < camera.getWidth(); x++)
-			raytraceColumn.run(x);
+		ThreadScheduler scheduler = new ThreadScheduler();
+		scheduler.createThreads(raytraceColumn, camera.getWidth());
+		scheduler.start();
+		scheduler.waitForFinish();
 
 		// no copy, real object
 		return img;
@@ -262,12 +264,5 @@ public class Scene {
 	 */
 	public Camera getCamera() {
 		return camera;
-	}
-
-	/**
-	 * Used for below method, so that we can implement a method accepting one argument.
-	 */
-	private interface SingleArgMethod {
-		void run(int a);
 	}
 }
