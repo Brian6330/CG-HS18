@@ -2,16 +2,28 @@ import java.util.Arrays;
 
 public class ThreadScheduler {
 
-    /** maximum optimum threads the JVM supports */
+    /**
+     * maximum number of simultaneous running threads the JVM supports
+     */
     private final int MAX_THRADS;
 
     private Thread[] threads;
 
     /**
-     * Constructs a simple thread creator for the ray tracer.
+     * Constructs a simple thread scheduler for the ray tracer with the
+     * optimum number of simultaneous running threads the JVM supports.
      */
     public ThreadScheduler() {
-        MAX_THRADS = Runtime.getRuntime().availableProcessors();
+        this(Runtime.getRuntime().availableProcessors());
+    }
+
+    /**
+     * Constructs a simple thread scheduler with specified number of threads
+     * @param max_threads number of threads. must be greater-or-equal than 1.
+     */
+    public ThreadScheduler(final int max_threads) {
+        assert (max_threads >= 1);
+        MAX_THRADS = max_threads;
     }
 
     /**
@@ -19,7 +31,7 @@ public class ThreadScheduler {
      * The upper_bound serves the maximum number of operations to be done.
      * These will be split up between each created thread.
      *
-     * @param f the function to perform for i = 0 to upper_bound
+     * @param f           the function to perform for i = 0 to upper_bound
      * @param upper_bound max operations
      */
     public void createThreads(final Function f, final int upper_bound) {
@@ -37,16 +49,16 @@ public class ThreadScheduler {
 
         // calculate lower bounds
         lower_bounds[0] = 0;
-        for (int i=1; i<lower_bounds.length; i++) {
-            lower_bounds[i] = lower_bounds[i-1] + ops;
-            if (i == lower_bounds.length-1) lower_bounds[i] += leftover;
+        for (int i = 1; i < lower_bounds.length; i++) {
+            lower_bounds[i] = lower_bounds[i - 1] + ops;
+            if (i == lower_bounds.length - 1) lower_bounds[i] += leftover;
         }
 
         // setup threads
         Arrays.setAll(threads, i -> new Thread(() -> {
             // set limit according
-            int limit = i+1 < lower_bounds.length ? lower_bounds[i+1] : upper_bound;
-            for (int j=lower_bounds[i]; j<limit; j++)
+            int limit = i + 1 < lower_bounds.length ? lower_bounds[i + 1] : upper_bound;
+            for (int j = lower_bounds[i]; j < limit; j++)
                 f.run(j);
         }));
     }
