@@ -103,7 +103,7 @@ keyboard(int key, int scancode, int action, int mods)
 
             case GLFW_KEY_9:
             {
-                if ((dist_factor_ =< 20.0) && (dist_factor_ >= 2.5)) {
+                if ((dist_factor_ <= 20.0) && (dist_factor_ >= 2.5)) {
                     dist_factor_ += 0.25;
                 }
                 break;
@@ -360,8 +360,11 @@ void Solar_viewer::paint()
     vec4     eye = vec4(0,0,7,1.0);
     vec4  center = sun_.pos_;
     vec4      up = vec4(0,1,0,0);
+    vec4  eye_center = vec4(0, 0, 0, 0);
+    vec4  center_of_ship = vec4(0, 0, 0, 0);
     float radius = sun_.radius_;
     mat4    view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
+
 
     billboard_x_angle_ = billboard_y_angle_ = 0.0f;
 
@@ -380,8 +383,9 @@ void Solar_viewer::paint()
 
     else {
     		center = planet_to_look_at_->pos_;
+    		vec4 center_inverse = center * (-1);
     		eye = vec4(center.x, center.y, center.z + dist_factor_ * planet_to_look_at_->radius_, 1.0);
-    		eye_center = mat4::translate(center) * (mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_)*(mat4::translate( center * (-1)) * eye)));
+    		eye_center = mat4::translate(center) * (mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_)*(mat4::translate( center_inverse) * eye)));
     		vec4  new_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
     		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
 
