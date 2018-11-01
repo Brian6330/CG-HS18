@@ -95,13 +95,13 @@ keyboard(int key, int scancode, int action, int mods)
 
             case GLFW_KEY_8:
             {
-                if (dist_factor_ > 2.5) dist_factor_ -= 0.25;
+                if (dist_factor_ > 2.5) dist_factor_ -= 1;
                 break;
             }
 
             case GLFW_KEY_9:
             {
-                if (dist_factor_ < 20.0) dist_factor_ += 0.25;
+                if (dist_factor_ < 20.0) dist_factor_ += 1;
                 break;
             }
 
@@ -356,35 +356,37 @@ void Solar_viewer::paint()
     vec4     eye = vec4(0,0,7,1.0);
     vec4  center = sun_.pos_;
     vec4      up = vec4(0,1,0,0);
+	
+	
     vec4  eye_center = vec4(0, 0, 0, 0);
-    vec4  center_of_ship = vec4(0, 0, 0, 0);
+    
+	
     float radius = sun_.radius_;
+	billboard_x_angle_ = billboard_y_angle_ = 0.0f;
     mat4    view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
-
-
-    billboard_x_angle_ = billboard_y_angle_ = 0.0f;
-
-    mat4 projection = mat4::perspective(fovy_, (float)width_/(float)height_, near_, far_);
-    draw_scene(projection, view);
+	mat4 projection = mat4::perspective(fovy_, (float)width_ / (float)height_, near_, far_);
+	
 
     //TO-DO: Ship direction?
     if (in_ship_) {
-    		center_of_ship = ship_.pos_;
+    		vec4 center_of_ship = ship_.pos_;
 
     		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
-    		view = mat4::look_at(vec3(center_of_ship.x, center_of_ship.y, center_of_ship.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
-
+    				
+			view = mat4::look_at(vec3(center_of_ship.x, center_of_ship.y, center_of_ship.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
     		draw_scene(projection, view);
     	}
 
     else {
     		center = planet_to_look_at_->pos_;
     		vec4 center_inverse = center * (-1);
-    		eye = vec4(center.x, center.y, center.z + dist_factor_ * planet_to_look_at_->radius_, 1.0);
+    		vec4 eye = vec4(center.x, center.y, center.z + dist_factor_ * planet_to_look_at_->radius_, 1.0);
     		eye_center = mat4::translate(center) * (mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_)*(mat4::translate( center_inverse) * eye)));
-    		vec4  new_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
+    		vec4 other_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
     		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
 
+			
+			view = mat4::look_at(vec3(other_eye), vec3(center), vec3(up));
     		draw_scene(projection, view);
 
     	}
