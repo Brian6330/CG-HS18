@@ -208,6 +208,12 @@ void Solar_viewer::update_body_positions() {
      *       and earth's moon. Do not explicitly place the space ship, its position
      *       is fixed for now.
      * */
+	earth_.pos_ = vec4(earth_.distance_ * sin(earth_.angle_orbit_), 0, earth_.distance_ * cos(earth_.angle_orbit_), earth_.pos_.w);
+	mercury_.pos_ = vec4(mercury_.distance_ * sin(mercury_.angle_orbit_), 0, mercury_.distance_ * cos(mercury_.angle_orbit_), mercury_.pos_.w);
+	venus_.pos_ = vec4(venus_.distance_ * sin(venus_.angle_orbit_), 0, venus_.distance_ * cos(venus_.angle_orbit_), venus_.pos_.w);
+	mars_.pos_ = vec4(mars_.distance_ * sin(mars_.angle_orbit_), 0, mars_.distance_ * cos(mars_.angle_orbit_), mars_.pos_.w);
+	moon_.pos_ = vec4(moon_.distance_ * sin(moon_.angle_orbit_), 0, moon_.distance_ * cos(moon_.angle_orbit_), moon_.pos_.w);
+	moon_.pos_ = moon_.pos_ + earth_.pos_;
 }
 
 //-----------------------------------------------------------------------------
@@ -397,6 +403,83 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     sun_shader_.set_uniform("greyscale", (int)greyscale_);
     sun_.tex_.bind();
     unit_sphere_.draw();
+
+	// render earth
+	m_matrix = mat4::translate(earth_.pos_) * mat4::rotate_y(earth_.angle_self_) * mat4::scale(earth_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	earth_.tex_.bind();
+	unit_sphere_.draw();
+
+	// render mercury
+	m_matrix = mat4::translate(mercury_.pos_) * mat4::rotate_y(mercury_.angle_self_) * mat4::scale(mercury_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	mercury_.tex_.bind();
+	unit_sphere_.draw();
+
+	// render venus
+	m_matrix = mat4::translate(venus_.pos_) * mat4::rotate_y(venus_.angle_self_) * mat4::scale(venus_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	venus_.tex_.bind();
+	unit_sphere_.draw();
+
+	// render mars
+	m_matrix = mat4::translate(mars_.pos_) * mat4::rotate_y(mars_.angle_self_) * mat4::scale(mars_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	mars_.tex_.bind();
+	unit_sphere_.draw();
+
+	// render moon
+	m_matrix = mat4::translate(moon_.pos_) * mat4::rotate_y(moon_.angle_self_) * mat4::scale(moon_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	moon_.tex_.bind();
+	unit_sphere_.draw();
+
+	//render ship
+	m_matrix = mat4::translate(ship_.pos_) * mat4::rotate_y(ship_.angle_) * mat4::scale(ship_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	ship_.tex_.bind();
+	ship_.draw();
+
+	// render stars
+	m_matrix = mat4::rotate_y(stars_.angle_self_) * mat4::scale(stars_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	color_shader_.use();
+	color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	color_shader_.set_uniform("tex", 0);
+	color_shader_.set_uniform("greyscale", (int)greyscale_);
+	stars_.tex_.bind();
+	unit_sphere_.draw();
 
     /** \todo Render the star background, the spaceship, and the rest of the celestial bodies.
      *  For now, everything should be rendered with the color_shader_,
