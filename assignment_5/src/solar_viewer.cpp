@@ -95,17 +95,13 @@ keyboard(int key, int scancode, int action, int mods)
 
             case GLFW_KEY_8:
             {
-                if ((dist_factor_ <= 20.0) && (dist_factor_ > 2.5)) {
-                    dist_factor_ -= 0.25;
-                }
+                if (dist_factor_ > 2.5) dist_factor_ -= 0.25;
                 break;
             }
 
             case GLFW_KEY_9:
             {
-                if ((dist_factor_ < 20.0) && (dist_factor_ >= 2.5)) {
-                    dist_factor_ += 0.25;
-                }
+                if (dist_factor_ < 20.0) dist_factor_ += 0.25;
                 break;
             }
 
