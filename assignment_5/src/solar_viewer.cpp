@@ -370,10 +370,10 @@ void Solar_viewer::paint()
 
     //TO-DO: Ship direction?
     if (in_ship_) {
-    		ship_center = ship_.pos_;
+    		center_of_ship = ship_.pos_;
 
     		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
-    		view = mat4::look_at(vec3(ship_center.x, ship_center.y, ship_center.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
+    		view = mat4::look_at(vec3(center_of_ship.x, center_of_ship.y, center_of_ship.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
 
     		draw_scene(projection, view);
     	}
