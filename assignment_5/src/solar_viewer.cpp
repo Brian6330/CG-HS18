@@ -368,29 +368,30 @@ void Solar_viewer::paint()
 	
 
     //TO-DO: Ship direction?
-    if (in_ship_) {
-    		vec4 center_of_ship = ship_.pos_;
+	switch (in_ship_) {
+		case true:
+		{
+			up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
 
-    		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
-    				
-			view = mat4::look_at(vec3(center_of_ship.x, center_of_ship.y, center_of_ship.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
-    		draw_scene(projection, view);
-    	}
+			view = mat4::look_at(vec3(ship_.pos_.x, ship_.pos_.y, ship_.pos_.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
+			draw_scene(projection, view);
+			break;
+		}
 
-    else {
-    		center = planet_to_look_at_->pos_;
-    		vec4 center_inverse = center * (-1);
-    		vec4 eye = vec4(center.x, center.y, center.z + dist_factor_ * planet_to_look_at_->radius_, 1.0);
-    		eye_center = mat4::translate(center) * (mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_)*(mat4::translate( center_inverse) * eye)));
-    		vec4 other_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
-    		up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
+		case false:
+		{
+			center = planet_to_look_at_->pos_;
+			vec4 center_inverse = center * (-1);
+			vec4 eye = vec4(center.x, center.y, center.z + dist_factor_ * planet_to_look_at_->radius_, 1.0);
+			eye_center = mat4::translate(center) * (mat4::rotate_y(y_angle_) * (mat4::rotate_x(x_angle_) * (mat4::translate(center_inverse) * eye)));
+			vec4 other_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
+			up = mat4::rotate_y(y_angle_) * (mat4::rotate_x(x_angle_) * up);
 
-			
 			view = mat4::look_at(vec3(other_eye), vec3(center), vec3(up));
-    		draw_scene(projection, view);
-
-    	}
-
+			draw_scene(projection, view);
+			break;
+		}
+	}
 }
 
 
