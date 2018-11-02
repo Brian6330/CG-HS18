@@ -357,23 +357,24 @@ void Solar_viewer::paint()
     vec4  center = sun_.pos_;
     vec4      up = vec4(0,1,0,0);
 	
-	
     vec4  eye_center = vec4(0, 0, 0, 0);
-    
-	
-    float radius = sun_.radius_;
 	billboard_x_angle_ = billboard_y_angle_ = 0.0f;
-    mat4    view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
 	mat4 projection = mat4::perspective(fovy_, (float)width_ / (float)height_, near_, far_);
 	
 
     //TO-DO: Ship direction?
+	
 	switch (in_ship_) {
 		case true:
 		{
-			up = mat4::rotate_y(y_angle_)* (mat4::rotate_x(x_angle_) * up);
+			center = ship_.pos_;
+			vec4 center_inverse = center * (-1);
+			vec4 eye = vec4(center.x, center.y, center.z + dist_factor_ * ship_.radius_, 1.0);
+			eye_center = mat4::translate(center) * (mat4::rotate_y(ship_.angle_ + 180)) * (mat4::rotate_x(x_angle_ + 90) * ((mat4::translate(center_inverse) * eye)));
+			vec4 other_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
+			up = mat4::rotate_y(ship_.angle_ + 180) * (mat4::rotate_x(x_angle_ + 90) * up);
 
-			view = mat4::look_at(vec3(ship_.pos_.x, ship_.pos_.y, ship_.pos_.z), vec3(ship_.direction_.x, ship_.direction_.y, ship_.direction_.z), vec3(up));
+			mat4 view = mat4::look_at(vec3(other_eye), vec3(center), vec3(up));
 			draw_scene(projection, view);
 			break;
 		}
@@ -387,7 +388,7 @@ void Solar_viewer::paint()
 			vec4 other_eye = vec4(eye_center.x, eye_center.y, eye_center.z, 1.0);
 			up = mat4::rotate_y(y_angle_) * (mat4::rotate_x(x_angle_) * up);
 
-			view = mat4::look_at(vec3(other_eye), vec3(center), vec3(up));
+			mat4 view = mat4::look_at(vec3(other_eye), vec3(center), vec3(up));
 			draw_scene(projection, view);
 			break;
 		}
