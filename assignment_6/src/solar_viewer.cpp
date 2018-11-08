@@ -357,7 +357,8 @@ void Solar_viewer::paint()
 
     mat4 view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
 
-    billboard_x_angle_ = billboard_y_angle_ = 0.0f;
+    billboard_x_angle_ = x_angle_;
+    billboard_y_angle_ = y_angle_;
 
     mat4 projection = mat4::perspective(fovy_, (float)width_/(float)height_, near_, far_);
     draw_scene(projection, view);

@@ -112,19 +112,38 @@ bool Texture::createSunBillboardTexture()
 
     for (int col = 0; col < width; ++col) {
         for (int row = 0; row < height; ++row) {
-            img[(row * width + col) * 4 + 0] = 255; // R
-            img[(row * width + col) * 4 + 1] = 153; // G
-            img[(row * width + col) * 4 + 2] = 100; // B
-            //img[(row * width + col) * 4 + 3] = 255; // A
 
-            unsigned char color = 255;
+            int red = 255;
+            int blue = 153;
+            int green = 100;
+            int color = 255;
+
             const int c = col - center;
             const int r = row - height/2;
+
             double dist = sqrt(c*c + r*r);
+
+
             if (dist > 150) {
-                color =  (unsigned char) (color / pow(dist-150, 2));
+                float excessDist = dist - 150;
+
+                // to have a nice fading effect, after dist = 150, we close in on 0 i.e. black
+                red -= excessDist;
+                green -= excessDist;
+                blue -= excessDist;
+                color -= excessDist*3.14159; //using a random factor to decrease halo
+
+                if(red < 0) red = 0;
+                if(green < 0) green = 0;
+                if(blue < 0) blue = 0;
+                if(color < 0) color = 0;
+
+                //color =  (unsigned char) (color / pow(dist-150, 2));
             }
 
+            img[(row * width + col) * 4 + 0] = red; // R
+            img[(row * width + col) * 4 + 1] = blue; // G
+            img[(row * width + col) * 4 + 2] = green; // B
             img[(row * width + col) * 4 + 3] = color; // A
 
         }
