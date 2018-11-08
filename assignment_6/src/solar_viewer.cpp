@@ -422,10 +422,13 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
                 mat4::rotate_y(planet.angle_self_);
         mat4 mv_matrix  = _view * m_matrix;
         mat4 mvp_matrix = _projection * mv_matrix;
-        color_shader_.use();
-        color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-        color_shader_.set_uniform("tex",0);
-        color_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
+		phong_shader_.use();
+		phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+		phong_shader_.set_uniform("tex", 0);
+		phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
+		phong_shader_.set_uniform("modelview_matrix", mv_matrix);
+		phong_shader_.set_uniform("normal_matrix", n_matrix);
+		phong_shader_.set_uniform("light_position", light);
         planet.tex_.bind();
         unit_sphere_.draw();
     };
@@ -437,18 +440,20 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     draw_planet(venus_);
     draw_planet(moon_);
     draw_planet(mars_);
-    draw_planet(earth_);
 
     // ship
-    m_matrix = mat4::translate(ship_.pos_)*mat4::rotate_y(ship_.angle_)*mat4::scale(ship_.radius_);
-    mv_matrix = _view * m_matrix;
-    mvp_matrix = _projection * mv_matrix;
-    color_shader_.use();
-    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-    color_shader_.set_uniform("tex",0);
-    color_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
-    ship_.tex_.bind();
-    ship_.draw();
+	m_matrix = mat4::translate(ship_.pos_)*mat4::rotate_y(ship_.angle_)*mat4::scale(ship_.radius_);
+	mv_matrix = _view * m_matrix;
+	mvp_matrix = _projection * mv_matrix;
+	phong_shader_.use();
+	phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+	phong_shader_.set_uniform("tex", 0);
+	phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
+	phong_shader_.set_uniform("modelview_matrix", mv_matrix);
+	phong_shader_.set_uniform("normal_matrix", n_matrix);
+	phong_shader_.set_uniform("light_position", light);
+	ship_.tex_.bind();
+	ship_.draw();
 
     /** \todo Switch from using color_shader_ to the fancier shaders you'll
      * implement in this assignment:
