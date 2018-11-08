@@ -357,8 +357,7 @@ void Solar_viewer::paint()
 
     mat4 view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
 
-    billboard_x_angle_ = x_angle_;
-    billboard_y_angle_ = y_angle_;
+    billboard_x_angle_ = billboard_y_angle_ = 0.0f;
 
     mat4 projection = mat4::perspective(fovy_, (float)width_/(float)height_, near_, far_);
     draw_scene(projection, view);
@@ -396,6 +395,7 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
 
     // the sun is centered at the origin and -- for lighting -- considered to be a point, so that is the light position in world coordinates
     vec4 light = vec4(0.0, 0.0, 0.0, 1.0); //in world coordinates
+	vec4 light_in_w = vec4(0.0, 0.0, 0.0, 1.0);
     // convert light into camera coordinates
     light = _view * light;
 
@@ -417,18 +417,21 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
 
        auto draw_planet = [&,this](Planet &planet)
     {
+
         mat4 m_matrix = mat4::translate(planet.pos_) *
-                mat4::scale(planet.radius_) *
-                mat4::rotate_y(planet.angle_self_);
+                mat4::rotate_y(planet.angle_self_) *
+				mat4::scale(planet.radius_);
         mat4 mv_matrix  = _view * m_matrix;
         mat4 mvp_matrix = _projection * mv_matrix;
+		mat3 n_matrix = transpose(inverse(mv_matrix));
+
 		phong_shader_.use();
-		phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-		phong_shader_.set_uniform("tex", 0);
-		phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
-		phong_shader_.set_uniform("modelview_matrix", mv_matrix);
-		phong_shader_.set_uniform("normal_matrix", n_matrix);
-		phong_shader_.set_uniform("light_position", light);
+		phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix, true);
+		phong_shader_.set_uniform("tex", 0, true);
+		phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_), true);
+		phong_shader_.set_uniform("modelview_matrix", mv_matrix, true);
+		phong_shader_.set_uniform("normal_matrix", n_matrix, true);
+		phong_shader_.set_uniform("light_position", light, true);
         planet.tex_.bind();
         unit_sphere_.draw();
     };
@@ -440,20 +443,18 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     draw_planet(venus_);
     draw_planet(moon_);
     draw_planet(mars_);
+    draw_planet(earth_);
 
     // ship
-	m_matrix = mat4::translate(ship_.pos_)*mat4::rotate_y(ship_.angle_)*mat4::scale(ship_.radius_);
-	mv_matrix = _view * m_matrix;
-	mvp_matrix = _projection * mv_matrix;
-	phong_shader_.use();
-	phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-	phong_shader_.set_uniform("tex", 0);
-	phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
-	phong_shader_.set_uniform("modelview_matrix", mv_matrix);
-	phong_shader_.set_uniform("normal_matrix", n_matrix);
-	phong_shader_.set_uniform("light_position", light);
-	ship_.tex_.bind();
-	ship_.draw();
+    m_matrix = mat4::translate(ship_.pos_)*mat4::rotate_y(ship_.angle_)*mat4::scale(ship_.radius_);
+    mv_matrix = _view * m_matrix;
+    mvp_matrix = _projection * mv_matrix;
+    color_shader_.use();
+    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    color_shader_.set_uniform("tex",0);
+    color_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
+    ship_.tex_.bind();
+    ship_.draw();
 
     /** \todo Switch from using color_shader_ to the fancier shaders you'll
      * implement in this assignment:
@@ -471,22 +472,7 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     *     billboard_y_angle_
     *   - Bind the texture for and draw sunglow_
     **/
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
-    m_matrix = mat4::rotate_y(billboard_y_angle_)
-            * mat4::rotate_x(billboard_x_angle_)
-            * mat4::scale(3 * sun_.radius_);
-    mv_matrix = _view * m_matrix;
-    mvp_matrix = _projection * mv_matrix;
-    color_shader_.use();
-    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-    color_shader_.set_uniform("tex",0);
-    color_shader_.set_uniform("greyscale", (int)greyscale_);
-
-    sunglow_.tex_.bind();
-    sunglow_.draw();
-    glDisable(GL_BLEND);
     // check for OpenGL errors
     glCheckError();
 }

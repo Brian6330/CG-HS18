@@ -35,7 +35,7 @@ void main()
      */
 
     vec3 color = vec3(0.0,0.0,0.0);
-    vec3 m = texture(tex, v2f_texcoord.st);
+    vec3 m = texture(tex, v2f_texcoord.st).rgb;
 
     // I = I_a * m_a + I_l * m_d * <n, l> + I_l * m_s * <r, v>^s.
     color += 0.2 * sunlight * m;
