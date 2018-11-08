@@ -357,7 +357,8 @@ void Solar_viewer::paint()
 
     mat4 view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
 
-    billboard_x_angle_ = billboard_y_angle_ = 0.0f;
+    billboard_x_angle_ = x_angle_;
+    billboard_y_angle_ = y_angle_;
 
     mat4 projection = mat4::perspective(fovy_, (float)width_/(float)height_, near_, far_);
     draw_scene(projection, view);
@@ -474,6 +475,23 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     **/
 
     // check for OpenGL errors
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+
+    m_matrix = mat4::rotate_y(billboard_y_angle_)
+               * mat4::rotate_x(billboard_x_angle_)
+               * mat4::scale(3 * sun_.radius_);
+    mv_matrix = _view * m_matrix;
+    mvp_matrix = _projection * mv_matrix;
+    color_shader_.use();
+    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    color_shader_.set_uniform("tex",0);
+    color_shader_.set_uniform("greyscale", (int)greyscale_);
+
+    sunglow_.tex_.bind();
+    sunglow_.draw();
+    glDisable(GL_BLEND);
+    
     glCheckError();
 }
 
