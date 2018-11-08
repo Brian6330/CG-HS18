@@ -16,8 +16,6 @@ in vec3 v2f_view;
 
 out vec4 f_color;
 
-uniform sampler2D tex;
-
 uniform sampler2D day_texture;
 uniform sampler2D night_texture;
 uniform sampler2D cloud_texture;
@@ -36,10 +34,8 @@ void main()
     vec3 night = vec3(0.0,0.0,0.0);
 
 
-
-    vec3 texture_value = texture(tex, v2f_texcoord.st).rgb;
-    vec3 day_texture_value = texture(tex, v2f_texcoord.st).rgb;
-    vec3 night_texture_value = texture(tex, v2f_texcoord.st).rgb;
+    vec3 day_texture_value = texture(day_texture, v2f_texcoord.st).rgb;
+    vec3 night_texture_value = texture(night_texture, v2f_texcoord.st).rgb;
 
     // 1 for water, 0 for other
     vec3 gloss_texture_value = texture(gloss_texture, v2f_texcoord.st).rgb;
@@ -49,16 +45,13 @@ void main()
     float murkiness = length(cloud_texture_value);
 
     // Ambient: I_a * m_a, I_a fixed to 0.2 * sunlight
-    color += 0.2 * sunlight * texture_value;
     day += 0.2 * sunlight * day_texture_value;
     night += 0.2 * sunlight * night_texture_value;
 
     // Diffuse: I_l * m_d * <normal, light>
     float diffuse_factor = dot(v2f_normal, v2f_light);
     if (diffuse_factor > 0) {
-        color += sunlight * texture_value * diffuse_factor;
         day += sunlight * day_texture_value * diffuse_factor;
-        night += sunlight * night_texture_value * diffuse_factor;
 
         // Specular: I_l * m_s * <reflected, view>^s
         vec3 reflected_light = reflect(-v2f_light, v2f_normal);
@@ -76,7 +69,7 @@ void main()
     day = mix(day, cloud, murkiness);
     night = mix(night_texture_value, defaultVec0, murkiness);
 
-    color = mix(night, day, abs(diffuse_factor));
+    color = mix(night, day, abs((diffuse_factor + 1) / 2));
 
     // convert RGB color to YUV color and use only the luminance
     if (greyscale) color = vec3(0.299*color.r+0.587*color.g+0.114*color.b);

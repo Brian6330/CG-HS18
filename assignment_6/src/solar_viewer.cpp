@@ -453,12 +453,11 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
 	n_matrix = transpose(inverse(mv_matrix));
 	earth_shader_.use();
 	earth_shader_.set_uniform("modelview_projection_matrix", mvp_matrix, true);
-	earth_shader_.set_uniform("tex", 0, true);
 	earth_shader_.set_uniform("greyscale", static_cast<int>(greyscale_), true);
-	earth_shader_.set_uniform("day_texture", 0);
-	earth_shader_.set_uniform("night_texture", 1);
-	earth_shader_.set_uniform("cloud_texture", 2);
-	earth_shader_.set_uniform("gloss_texture", 3);
+	earth_shader_.set_uniform("night_texture", 1, true);
+	earth_shader_.set_uniform("day_texture", 0, true);
+	earth_shader_.set_uniform("cloud_texture", 2, true);
+	earth_shader_.set_uniform("gloss_texture", 3, true);
 	earth_shader_.set_uniform("modelview_matrix", mv_matrix, true);
 	earth_shader_.set_uniform("normal_matrix", n_matrix, true);
 	earth_shader_.set_uniform("light_position", light, true);
