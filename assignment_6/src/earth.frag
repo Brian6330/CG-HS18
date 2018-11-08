@@ -16,6 +16,8 @@ in vec3 v2f_view;
 
 out vec4 f_color;
 
+uniform sampler2D tex;
+
 uniform sampler2D day_texture;
 uniform sampler2D night_texture;
 uniform sampler2D cloud_texture;
@@ -24,9 +26,62 @@ uniform bool greyscale;
 
 const float shininess = 20.0;
 const vec3  sunlight = vec3(1.0, 0.941, 0.898);
+const vec3 defaultVec1 = vec3(1, 1, 1);
+const vec3 defaultVec0= vec3(0, 0, 0);
 
 void main()
 {
+    vec3 color = vec3(0.0,0.0,0.0);
+    vec3 day = vec3(0.0,0.0,0.0);
+    vec3 night = vec3(0.0,0.0,0.0);
+
+
+
+    vec3 texture_value = texture(tex, v2f_texcoord.st).rgb;
+    vec3 day_texture_value = texture(tex, v2f_texcoord.st).rgb;
+    vec3 night_texture_value = texture(tex, v2f_texcoord.st).rgb;
+
+    vec3 cloud = vec3(0.0, 0.0, 0.0);
+    vec3 cloud_texture_value = texture(cloud_texture, v2f_texcoord.st).rgb;
+    float murkiness = length(cloud_texture_value);
+
+    // Ambient: I_a * m_a, I_a fixed to 0.2 * sunlight
+    color += 0.2 * sunlight * texture_value;
+    day += 0.2 * sunlight * day_texture_value;
+    night += 0.2 * sunlight * night_texture_value;
+
+    // Diffuse: I_l * m_d * <normal, light>
+    float diffuse_factor = dot(v2f_normal, v2f_light);
+    if (diffuse_factor > 0) {
+        color += sunlight * texture_value * diffuse_factor;
+        day += sunlight * day_texture_value * diffuse_factor;
+        night += sunlight * night_texture_value * diffuse_factor;
+
+        // Specular: I_l * m_s * <reflected, view>^s
+        vec3 reflected_light = reflect(-v2f_light, v2f_normal);
+        float specular_factor = dot(reflected_light, v2f_view);
+        if (specular_factor > 0) {
+            color += sunlight * texture_value * pow(specular_factor, shininess);
+            day += sunlight * day_texture_value * pow(specular_factor, shininess);
+            night += sunlight * night_texture_value * pow(specular_factor, shininess);
+        }
+    }
+
+    // Ambient: I_a * m_a, I_a fixed to 0.2 * sunlight
+    cloud += 0.2 * sunlight * cloud_texture_value;
+    // Diffuse: I_l * m_d * <normal, light>
+    cloud += sunlight * cloud_texture_value * diffuse_factor;
+    // mix is an interpolation
+    day = mix(day, cloud, murkiness);
+    night = mix(night_texture_value, defaultVec0, murkiness);
+
+    color = mix(night, day, abs(diffuse_factor));
+
+    // convert RGB color to YUV color and use only the luminance
+    if (greyscale) color = vec3(0.299*color.r+0.587*color.g+0.114*color.b);
+
+    // add required alpha value
+    f_color = vec4(color, 1.0);
     /** \todo
     * - Copy your working code from the fragment shader of your Phong shader use it as
     * starting point

@@ -32,5 +32,11 @@ void main()
      * - Copy your working code from the vertex shader of your phong shader.
      *   and continue with the fragment shader
      */
+    v2f_light = vec3(light_position[0], light_position[1], light_position[2]);
+    v2f_normal = normalize(normal_matrix * v_normal);
+    v2f_texcoord = v_texcoord;
 
+    v2f_view = normalize(vec3(vec4(0.0) - (modelview_matrix * v_position /*view position*/)));
+
+    gl_Position = modelview_projection_matrix * v_position;
 }
