@@ -465,7 +465,22 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     *     billboard_y_angle_
     *   - Bind the texture for and draw sunglow_
     **/
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
 
+    m_matrix = mat4::rotate_y(billboard_y_angle_)
+            * mat4::rotate_x(billboard_x_angle_)
+            * mat4::scale(3 * sun_.radius_);
+    mv_matrix = _view * m_matrix;
+    mvp_matrix = _projection * mv_matrix;
+    color_shader_.use();
+    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    color_shader_.set_uniform("tex",0);
+    color_shader_.set_uniform("greyscale", (int)greyscale_);
+
+    sunglow_.tex_.bind();
+    sunglow_.draw();
+    glDisable(GL_BLEND);
     // check for OpenGL errors
     glCheckError();
 }

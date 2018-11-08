@@ -12,6 +12,7 @@
 #include <cassert>
 #include <algorithm>
 #include "lodepng.h"
+#include <cmath>
 
 //=============================================================================
 
@@ -107,12 +108,25 @@ bool Texture::createSunBillboardTexture()
     *   - Experiment with the color and with how fast you change the transparency until the effect satisfies you
     **/
 
+    const int center = width / 2;
+
     for (int col = 0; col < width; ++col) {
         for (int row = 0; row < height; ++row) {
             img[(row * width + col) * 4 + 0] = 255; // R
-            img[(row * width + col) * 4 + 1] = 255; // G
-            img[(row * width + col) * 4 + 2] = 255; // B
-            img[(row * width + col) * 4 + 3] = 255; // A
+            img[(row * width + col) * 4 + 1] = 153; // G
+            img[(row * width + col) * 4 + 2] = 100; // B
+            //img[(row * width + col) * 4 + 3] = 255; // A
+
+            unsigned char color = 255;
+            const int c = col - center;
+            const int r = row - height/2;
+            double dist = sqrt(c*c + r*r);
+            if (dist > 150) {
+                color =  (unsigned char) (color / pow(dist-150, 2));
+            }
+
+            img[(row * width + col) * 4 + 3] = color; // A
+
         }
     }
 
