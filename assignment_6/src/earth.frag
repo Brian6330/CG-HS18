@@ -41,6 +41,9 @@ void main()
     vec3 day_texture_value = texture(tex, v2f_texcoord.st).rgb;
     vec3 night_texture_value = texture(tex, v2f_texcoord.st).rgb;
 
+    // 1 for water, 0 for other
+    vec3 gloss_texture_value = texture(gloss_texture, v2f_texcoord.st).rgb;
+
     vec3 cloud = vec3(0.0, 0.0, 0.0);
     vec3 cloud_texture_value = texture(cloud_texture, v2f_texcoord.st).rgb;
     float murkiness = length(cloud_texture_value);
@@ -60,10 +63,8 @@ void main()
         // Specular: I_l * m_s * <reflected, view>^s
         vec3 reflected_light = reflect(-v2f_light, v2f_normal);
         float specular_factor = dot(reflected_light, v2f_view);
-        if (specular_factor > 0) {
-            color += sunlight * texture_value * pow(specular_factor, shininess);
-            day += sunlight * day_texture_value * pow(specular_factor, shininess);
-            night += sunlight * night_texture_value * pow(specular_factor, shininess);
+        if (specular_factor > 0  && gloss_texture_value == defaultVec1) {
+            day += (1-murkiness) * sunlight * defaultVec1 * pow(specular_factor, shininess);
         }
     }
 
