@@ -156,6 +156,7 @@ void angleWeights(const vec3 &p0, const vec3 &p1, const vec3 &p2,
 
 //-----------------------------------------------------------------------------
 
+// Pasted assignment 3 vertex normal computation solution
 void Mesh::compute_normals()
 {
     // compute triangle normals
@@ -173,7 +174,28 @@ void Mesh::compute_normals()
         v.normal = vec3(0,0,0);
     }
 
-    // \todo Paste your assignment 3 vertex normal computation solution here.
+    // compute triangle normals and add them to vertices
+    for (Triangle& t: triangles_)
+    {
+        double w0, w1, w2;
+        angleWeights(vertices_[t.i0].position,
+                     vertices_[t.i1].position,
+                     vertices_[t.i2].position,
+                     w0, w1, w2);
+
+        // scatter face normals to vertex normals
+        vertices_[t.i0].normal += w0 * t.normal;
+        vertices_[t.i1].normal += w1 * t.normal;
+        vertices_[t.i2].normal += w2 * t.normal;
+    }
+
+    // normalize vertex normals
+    for (Vertex& v: vertices_)
+    {
+        v.normal = normalize(v.normal);
+    }
+
+
 }
 
 
