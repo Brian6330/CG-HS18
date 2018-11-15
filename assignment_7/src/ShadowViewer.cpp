@@ -45,26 +45,54 @@ mat4 ShadowViewer::m_constructLightViewMatrix(size_t li, size_t cube_face) const
     * Hint: use mat4::look_at
     **/
 
+    vec3 view;
+    vec3 up;
+    vec3 pos = m_light[li].position();
 
     vec3 lightPosition = m_light[li].position();
 
-    //determine the direction camera should look
-    vec3 y_Vec = vec3 (0, 1, 0);
-    vec3 center;
-    if(cube_face < 2) {
-        center = vec3(1, 0, 0);
+    if(cube_face == 0){
+        up = vec3(0,1,0);
+        view = vec3(1,0,0);
+
     }
-    else if(cube_face < 4) {
-        center = vec3(0, 1, 0);
+    else if(cube_face == 1){
+        up = vec3(0,1,0);
+        view = vec3(-1,0,0);
+
     }
-    else {
-        center = vec3(0, 0, 1);
+    else if(cube_face == 2){
+        up = vec3(0,0,-1);
+        view = vec3(0,1,0);
+
+    }
+    else if(cube_face == 3){
+        up = vec3(0,0,1);
+        view = vec3(0,-1,0);
+
+    }
+    else if(cube_face == 4){
+        up = vec3(0,1,0);
+        view = vec3(0,0,1);
+
+    }
+    else if(cube_face == 5){
+        up = vec3(0,1,0);
+        view = vec3(0,0,-1);
+
+
     }
 
-    if(cube_face % 2 != 0) {
-        center *= (-1);
-    }
-    return mat4::look_at(lightPosition, center, y_Vec) * mat4::translate(-lightPosition) * scene_view_matrix;
+    up = mat4::rotate_y(m_viewParameters.y_angle) *
+         mat4::rotate_x(m_viewParameters.x_angle) * up;
+    view = mat4::rotate_y(m_viewParameters.y_angle) *
+           mat4::rotate_x(m_viewParameters.x_angle) * view;
+
+
+    vec3 center = (pos+view);
+
+    return  mat4::look_at(pos, center ,up);
+
 }
 
 mat4 ShadowViewer::m_constructLightProjectionMatrix() const {
@@ -75,21 +103,8 @@ mat4 ShadowViewer::m_constructLightProjectionMatrix() const {
 
     // Construct matrix for frustum mapping
     // near = 0.1 and far = 6.0; source: Exercise Slides/PDF
-    mat4 frustumMapping = mat4::perspective(90.0, 1.0, 0.1, 6.0);
-
-    // Construct matrix for parallel projection onto xy-plane
-    mat4 parallelProjXY = mat4::identity();
-    parallelProjXY(2, 2) = 0;
-
-    // Construct matrix for viewport transformation
-    //note: each side of the cube is [-1,1]² -> left = bottom = -1, height = width = 2
-    mat4 viewportTransformation = mat4::identity();
-    viewportTransformation(2, 2) = 0.5;
-    viewportTransformation(0, 3) = -1;
-    viewportTransformation(1, 3) = -1;
-    viewportTransformation(2, 3) = 0.5;
-
-    return viewportTransformation * parallelProjXY * frustumMapping;
+    float fovy = 90;
+    return mat4::perspective(fovy,1,0.1, 6.0);
 
 }
 

@@ -48,4 +48,9 @@ void main()
 
     // append the required alpha value
     f_light_contribution = vec4(color, 1.0);
+
+    // normalize directions
+    vec3 L = normalize(light_position-v2f_ec_vertex);
+    vec3 V = normalize(v2f_ec_vertex);
+    vec3 R = normalize(reflect(-L, N));
 }
