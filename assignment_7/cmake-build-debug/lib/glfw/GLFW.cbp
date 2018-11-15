@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="GLFW"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\lib\;CMake Files\lib\glfw\;CMake Files\lib\glfw\src\;CMake Files\lib\glew\;CMake Files\lib\lodePNG\;CMake Files\src\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="glfw">
+				<Option output="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/libglfw.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_GLFW_USE_CONFIG_H"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/include"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src"/>
+					<Add directory="/usr/include/c++/8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/8"/>
+					<Add directory="/usr/include/c++/8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 glfw"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="glfw/fast">
+				<Option output="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/libglfw.so" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-D_GLFW_USE_CONFIG_H"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/include"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src"/>
+					<Add directory="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src"/>
+					<Add directory="/usr/include/c++/8"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/8"/>
+					<Add directory="/usr/include/c++/8/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/8/include-fixed"/>
+					<Add directory="/usr/include/x86_64-linux-gnu"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 glfw/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/cmake-build-debug/lib/glfw/src/glfw_config.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/include/GLFW/glfw3.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/include/GLFW/glfw3native.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/context.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/glx_context.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/glx_context.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/init.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/input.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/internal.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/linux_joystick.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/linux_joystick.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/monitor.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/posix_time.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/posix_time.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/posix_tls.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/posix_tls.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/window.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/x11_init.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/x11_monitor.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/x11_platform.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/x11_window.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/xkb_unicode.c">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/xkb_unicode.h">
+			<Option target="glfw"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lib\glfw\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lib\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/glfw3.pc.in">
+			<Option virtualFolder="CMake Files\lib\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/glfw3Config.cmake.in">
+			<Option virtualFolder="CMake Files\lib\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glfw/src/glfw_config.h.in">
+			<Option virtualFolder="CMake Files\lib\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/glew/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lib\glew\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/lib/lodePNG/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lib\lodePNG\"/>
+		</Unit>
+		<Unit filename="/home/joeft/Git/CG-HS18/assignment_7/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
