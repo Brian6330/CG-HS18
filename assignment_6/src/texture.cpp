@@ -12,7 +12,6 @@
 #include <cassert>
 #include <algorithm>
 #include "lodepng.h"
-#include <cmath>
 
 //=============================================================================
 
@@ -101,51 +100,33 @@ bool Texture::createSunBillboardTexture()
     int height = 900;
     img.resize(width*height * 4);
 
-    /** \todo Set up the texture for the sun billboard.
-    *   - Draw an opaque circle with a 150 pixel radius in its middle
-    *   - Outside that circle the texture should become more and more transparent to mimic a nice glow effect
-    *   - Make sure that your texture is fully transparent at its borders to avoid seeing visible edges
-    *   - Experiment with the color and with how fast you change the transparency until the effect satisfies you
-    **/
+    const int inner_radius = 150;
+    const int outer_radius = 450;
+    const int inner_radius_sq = inner_radius * inner_radius;
+    const int outer_radius_sq = outer_radius * outer_radius;
 
-    const int center = width / 2;
+    for (int row = 0; row < height; ++row) {
+        for (int col = 0; col < width; ++col) {
 
-    for (int col = 0; col < width; ++col) {
-        for (int row = 0; row < height; ++row) {
+            int x = col - width / 2;
+            int y = row - height / 2;
+            int r2 = x*x + y*y;
 
-            int red = 255;
-            int blue = 153;
-            int green = 100;
-            int color = 255;
-
-            const int c = col - center;
-            const int r = row - height/2;
-
-            double dist = sqrt(c*c + r*r);
-
-
-            if (dist > 150) {
-                float excessDist = dist - 150;
-
-                // to have a nice fading effect, after dist = 150, we close in on 0 i.e. black
-                red -= excessDist;
-                green -= excessDist;
-                blue -= excessDist;
-                color -= excessDist*3.14159; //using a random factor to decrease halo
-
-                if(red < 0) red = 0;
-                if(green < 0) green = 0;
-                if(blue < 0) blue = 0;
-                if(color < 0) color = 0;
-
-                //color =  (unsigned char) (color / pow(dist-150, 2));
+            if (r2 < inner_radius_sq)
+            {
+                img[(row * width + col) * 4 + 0] = 255;
+                img[(row * width + col) * 4 + 1] = 127;
+                img[(row * width + col) * 4 + 2] =   0;
+                img[(row * width + col) * 4 + 3] = 255;
             }
-
-            img[(row * width + col) * 4 + 0] = red; // R
-            img[(row * width + col) * 4 + 1] = blue; // G
-            img[(row * width + col) * 4 + 2] = green; // B
-            img[(row * width + col) * 4 + 3] = color; // A
-
+            else
+            {
+                img[(row * width + col) * 4 + 0] = std::min<int>(255, (1.0 * inner_radius_sq / r2) * 255);
+                img[(row * width + col) * 4 + 1] = std::min<int>(255, (0.5 * inner_radius_sq / r2) * 255);
+                img[(row * width + col) * 4 + 2] = std::min<int>(255, (0.0 * inner_radius_sq / r2) * 255);
+                float a = 1. * inner_radius_sq / r2 - 1. * inner_radius_sq / outer_radius_sq;
+                img[(row * width + col) * 4 + 3] = std::min<int>(255, std::max<int>(0, a * 255));
+            }
         }
     }
 

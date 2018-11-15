@@ -101,7 +101,7 @@ keyboard(int key, int scancode, int action, int mods)
                 dist_factor_ = std::max(dist_factor_,2.5f);
                 break;
             }
-			
+
             case GLFW_KEY_R:
             {
                 randomize_planets();
@@ -208,13 +208,13 @@ keyboard(int key, int scancode, int action, int mods)
 // around their orbits. This position is needed to set up the camera in the scene
 // (see Solar_viewer::paint)
 void Solar_viewer::update_body_positions() {
-        std::array<Planet *, 4> planets = { &mercury_, &venus_, &earth_, &mars_};
+    std::array<Planet *, 4> planets = { &mercury_, &venus_, &earth_, &mars_};
     for (Planet *p : planets)
         p->pos_ = mat4::rotate_y(p->angle_orbit_) * vec4(p->distance_, 0, 0, 1);
 
     // translate by negative distance so that an approximately correct
     // side of the moon faces earth:
-    moon_.pos_ = mat4::translate(earth_.pos_) * (
+    moon_.pos_ = earth_.pos_ + (
                 mat4::rotate_y(moon_.angle_orbit_) *
                 vec4(-moon_.distance_, 0, 0, 1));
 }
@@ -341,24 +341,31 @@ void Solar_viewer::paint()
         //   offset). This rotation must happen before the rotation by ship_.angle_
         //   (otherwise rotating the ship will cause the camera to wobble),
         //   which is why we can't just use ship.direction_.
-        center = vec4(ship_.pos_, 1);
+        center = ship_.pos_;
         // add the ship angle to the rotation so the viewing angle stays constant w.r.t. the ship
         mat4 rot = mat4::rotate_y(y_angle_ + ship_.angle_) * mat4::rotate_x(15.0f);
-        eye = center + rot * vec4(0, 0, - dist_factor_ * radius, 0);
+        eye = center + rot * vec4(0, 0, - dist_factor_ * radius, 1);
         up  = rot * vec4(0, 1, 0, 0);
     } else // not in ship
     {
         center = planet_to_look_at_->pos_;
         mat4 rot = mat4::rotate_y(y_angle_) * mat4::rotate_x(x_angle_);
         float radius = planet_to_look_at_->radius_;
-        eye = center + rot * vec4(0, 0, (dist_factor_ * radius), 0);
+        eye = center + rot * vec4(0, 0, (dist_factor_ * radius), 1);
         up = rot * vec4(0, 1, 0, 0);
     }
 
     mat4 view = mat4::look_at(vec3(eye), vec3(center), vec3(up));
 
-    billboard_x_angle_ = x_angle_;
-    billboard_y_angle_ = y_angle_;
+    {
+        // Determine the rotation needed to take the billboard's initial normal (0, 0, 1)
+        // to the vector pointing from the sun to the eye.
+        // Note: positive (clockwise) rotation around x moves the normal in the -y direction, not +y.
+        // (These are *extrinsic* Euler angles).
+        vec3 desiredNormal = normalize(vec3(eye) - vec3(sun_.pos_));
+        billboard_x_angle_ = asin(-desiredNormal.y) * (180 / M_PI);                  // angle in [-90, 90]
+        billboard_y_angle_ = atan2(desiredNormal.x, desiredNormal.z) * (180 / M_PI); // angle in (-180, 180]
+    }
 
     mat4 projection = mat4::perspective(fovy_, (float)width_/(float)height_, near_, far_);
     draw_scene(projection, view);
@@ -367,7 +374,6 @@ void Solar_viewer::paint()
 
 
 //-----------------------------------------------------------------------------
-
 
 void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
 {
@@ -396,7 +402,6 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
 
     // the sun is centered at the origin and -- for lighting -- considered to be a point, so that is the light position in world coordinates
     vec4 light = vec4(0.0, 0.0, 0.0, 1.0); //in world coordinates
-	vec4 light_in_w = vec4(0.0, 0.0, 0.0, 1.0);
     // convert light into camera coordinates
     light = _view * light;
 
@@ -416,28 +421,35 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     sun_.tex_.bind();
     unit_sphere_.draw();
 
-       auto draw_planet = [&,this](Planet &planet)
+    auto draw_planet = [&,this](Planet &planet)
     {
-
         mat4 m_matrix = mat4::translate(planet.pos_) *
-                mat4::rotate_y(planet.angle_self_) *
-				mat4::scale(planet.radius_);
+                mat4::scale(planet.radius_) *
+                mat4::rotate_y(planet.angle_self_);
         mat4 mv_matrix  = _view * m_matrix;
         mat4 mvp_matrix = _projection * mv_matrix;
-		mat3 n_matrix = transpose(inverse(mv_matrix));
-
-		phong_shader_.use();
-		phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix, true);
-		phong_shader_.set_uniform("tex", 0, true);
-		phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_), true);
-		phong_shader_.set_uniform("modelview_matrix", mv_matrix, true);
-		phong_shader_.set_uniform("normal_matrix", n_matrix, true);
-		phong_shader_.set_uniform("light_position", light, true);
+        mat3 n_matrix   = inverse(transpose(mat3(mv_matrix)));
+        phong_shader_.use();
+        phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+        phong_shader_.set_uniform("modelview_matrix", mv_matrix);
+        phong_shader_.set_uniform("normal_matrix", n_matrix);
+        phong_shader_.set_uniform("light_position", light);
+        phong_shader_.set_uniform("tex",0);
+        phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
         planet.tex_.bind();
         unit_sphere_.draw();
     };
 
-    draw_planet(stars_);
+    // star background
+    m_matrix = mat4::scale(stars_.radius_);
+    mv_matrix = _view * m_matrix;
+    mvp_matrix = _projection * mv_matrix;
+    color_shader_.use();
+    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    color_shader_.set_uniform("tex", 0);
+    color_shader_.set_uniform("greyscale", (int)greyscale_);
+    stars_.tex_.bind();
+    unit_sphere_.draw();
 
 
     draw_planet(mercury_);
@@ -445,71 +457,56 @@ void Solar_viewer::draw_scene(mat4& _projection, mat4& _view)
     draw_planet(moon_);
     draw_planet(mars_);
 
-	 m_matrix = mat4::translate(earth_.pos_) *
-		mat4::rotate_y(earth_.angle_self_) *
-		mat4::scale(earth_.radius_);
-	mv_matrix = _view * m_matrix;
-	mvp_matrix = _projection * mv_matrix;
-	n_matrix = transpose(inverse(mv_matrix));
-	earth_shader_.use();
-	earth_shader_.set_uniform("modelview_projection_matrix", mvp_matrix, true);
-	earth_shader_.set_uniform("greyscale", static_cast<int>(greyscale_), true);
-	earth_shader_.set_uniform("night_texture", 1, true);
-	earth_shader_.set_uniform("day_texture", 0, true);
-	earth_shader_.set_uniform("cloud_texture", 2, true);
-	earth_shader_.set_uniform("gloss_texture", 3, true);
-	earth_shader_.set_uniform("modelview_matrix", mv_matrix, true);
-	earth_shader_.set_uniform("normal_matrix", n_matrix, true);
-	earth_shader_.set_uniform("light_position", light, true);
-	earth_.tex_.bind();
-	unit_sphere_.draw();
+    // earth
+    m_matrix = mat4::translate(earth_.pos_) *
+               mat4::scale(earth_.radius_) *
+               mat4::rotate_y(earth_.angle_self_);
+    mv_matrix  = _view * m_matrix;
+    mvp_matrix = _projection * mv_matrix;
+    n_matrix   = inverse(transpose(mat3(mv_matrix)));
+    earth_shader_.use();
+    earth_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    earth_shader_.set_uniform("modelview_matrix", mv_matrix);
+    earth_shader_.set_uniform("normal_matrix", n_matrix);
+    earth_shader_.set_uniform("light_position", light);
+    earth_shader_.set_uniform("day_texture",   0);
+    earth_shader_.set_uniform("night_texture", 1);
+    earth_shader_.set_uniform("cloud_texture", 2);
+    earth_shader_.set_uniform("gloss_texture", 3);
+    earth_shader_.set_uniform("greyscale", (int)(greyscale_));
+    earth_.tex_.bind();
+    unit_sphere_.draw();
+    earth_shader_.disable();
 
     // ship
     m_matrix = mat4::translate(ship_.pos_)*mat4::rotate_y(ship_.angle_)*mat4::scale(ship_.radius_);
     mv_matrix = _view * m_matrix;
     mvp_matrix = _projection * mv_matrix;
-    color_shader_.use();
-    color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-    color_shader_.set_uniform("tex",0);
-    color_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
+    n_matrix = inverse(transpose(mat3(mv_matrix)));
+    phong_shader_.use();
+    phong_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
+    phong_shader_.set_uniform("modelview_matrix", mv_matrix);
+    phong_shader_.set_uniform("normal_matrix", n_matrix);
+    phong_shader_.set_uniform("light_position", light);
+    phong_shader_.set_uniform("tex",0);
+    phong_shader_.set_uniform("greyscale", static_cast<int>(greyscale_));
     ship_.tex_.bind();
     ship_.draw();
 
-    /** \todo Switch from using color_shader_ to the fancier shaders you'll
-     * implement in this assignment:
-     *      mercury, venus, moon, mars, ship: phong_shader_
-     *      earth: earth_shader_
-     *      stars, sunglow: still use color_shader_
-     *  You'll need to make sure all the GLSL uniform variables are set. For
-     *  Phong shading, you need to pass in the modelview matrix, the normal transformation
-     *  matrix, and light position in addition to the color_shader_ parameters.
-     */
-
-    /** \todo Render the sun's halo here using the "color_shader_"
-    *   - Construct a model matrix that scales the billboard to 3 times the
-    *     sun's radius and orients it according to billboard_x_angle_ and
-    *     billboard_y_angle_
-    *   - Bind the texture for and draw sunglow_
-    **/
-
-    // check for OpenGL errors
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
-
-    m_matrix = mat4::rotate_y(billboard_y_angle_)
-               * mat4::rotate_x(billboard_x_angle_)
-               * mat4::scale(3 * sun_.radius_);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    m_matrix = mat4::rotate_y(billboard_y_angle_) * mat4::rotate_x(billboard_x_angle_)*mat4::scale(sun_.radius_ * 3);
     mv_matrix = _view * m_matrix;
     mvp_matrix = _projection * mv_matrix;
     color_shader_.use();
     color_shader_.set_uniform("modelview_projection_matrix", mvp_matrix);
-    color_shader_.set_uniform("tex",0);
+    color_shader_.set_uniform("tex", 0);
     color_shader_.set_uniform("greyscale", (int)greyscale_);
-
     sunglow_.tex_.bind();
     sunglow_.draw();
     glDisable(GL_BLEND);
-    
+
+    // check for OpenGL errors
     glCheckError();
 }
 

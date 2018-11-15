@@ -24,32 +24,25 @@ const vec3  sunlight = vec3(1.0, 0.941, 0.898);
 
 void main()
 {
-    /**
-    *  Implement the Phong shading model (like in the 1st exercise) by using the passed
-    *  variables and write the resulting color to `color`.
-    *  `tex` should be used as material parameter for ambient, diffuse and specular lighting.
-    * Hints:
-    * - The texture(texture, 2d_position) returns a 4-vector (rgba). You can use
-    * `texture(...).r` to get just the red component or `texture(...).rgb` to get a vec3 color
-    * value
-     */
 
     vec3 color = vec3(0.0,0.0,0.0);
-    vec3 m = texture(tex, v2f_texcoord.st).rgb;
 
-    // I = I_a * m_a + I_l * m_d * <n, l> + I_l * m_s * <r, v>^s.
-    color += 0.2 * sunlight * m;
+    // normalize directions
+    vec3 N = normalize(v2f_normal);
+    vec3 L = normalize(v2f_light);
+    vec3 V = normalize(v2f_view);
+    vec3 R = normalize(reflect(-L, N));
 
-    float diffuse = dot(v2f_normal, v2f_light);
-    if(diffuse > 0) {
-        color += sunlight * m * diffuse;
-        vec3 r = 2 * v2f_normal * diffuse - v2f_light;
-        float specular = dot(r, v2f_view);
-        if(specular > 0) {
-            color += sunlight * m * pow(specular, shininess);
-        }
+    // compute diffuse and specular intensities
+    float ambient  = 0.2;
+    float diffuse  = max(0.0, dot(N,L));
+    float specular = (diffuse != 0.0) ? pow(max(0.0, dot(V,R)), shininess) : 0.0;
 
-    }
+    // fetch textures
+    vec3 material = texture(tex, v2f_texcoord.st).rgb;
+
+    // combine material (=texture) with lighting
+    color = ambient*material*sunlight + diffuse*material*sunlight + specular*material*sunlight;
 
     // convert RGB color to YUV color and use only the luminance
     if (greyscale) color = vec3(0.299*color.r+0.587*color.g+0.114*color.b);
