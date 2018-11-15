@@ -102,7 +102,7 @@ void Mesh::m_generate_vao() {
                  sizeof(float) * coords.size(),
                  coords.data(),
                  GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
     // Pack the normal components into an array that we can pass to OpenGL
@@ -118,7 +118,7 @@ void Mesh::m_generate_vao() {
                  sizeof(float) * coords.size(),
                  coords.data(),
                  GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(1);
 
     n_indices = 3 * nt;
