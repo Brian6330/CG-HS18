@@ -1,3 +1,8 @@
+# set flag to use new OpenGL implementations
+if(UNIX)
+    cmake_policy(SET CMP0072 NEW)
+endif()
+
 # OpenGL & GLEW library
 find_package(OpenGL)
 ADD_DEFINITIONS(-DGLEW_STATIC)

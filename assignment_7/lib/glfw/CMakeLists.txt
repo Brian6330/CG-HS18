@@ -85,6 +85,10 @@ else()
 endif()
 
 if (_GLFW_USE_OPENGL)
+    # set flag to use new OpenGL implementations
+    if(UNIX)
+        cmake_policy(SET CMP0072 NEW)
+    endif()
     find_package(OpenGL REQUIRED)
 elseif (_GLFW_USE_GLESV1)
     find_package(GLESv1 REQUIRED)
