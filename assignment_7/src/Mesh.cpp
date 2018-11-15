@@ -204,8 +204,8 @@ void Mesh::compute_normals()
 
 void Mesh::compute_bounding_box()
 {
-    bb_min_ = vec3(std::numeric_limits<float>::max());
-    bb_max_ = vec3(std::numeric_limits<float>::lowest());
+    bb_min_ = vec3(std::numeric_limits<double>::max());
+    bb_max_ = vec3(std::numeric_limits<double>::lowest());
 
     for (Vertex v: vertices_)
     {
