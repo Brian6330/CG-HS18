@@ -11,9 +11,9 @@ in vec3 v2f_lc_vertex; // vertex position in "eye-coordinates" for the light
 layout(location = 0) out float dist;
 
 void main() {
-    /** \todo
+    /** Done
     * Compute the distance from the light to the scene intersection represented
     * by this fragment.
     **/
-    dist = 0.0f;
+    dist = length( v2f_lc_vertex );
 }
