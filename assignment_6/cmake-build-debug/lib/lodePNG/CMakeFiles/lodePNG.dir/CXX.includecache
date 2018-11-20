@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/lib/lodePNG/lodepng.cpp
+lodepng.h
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/lib/lodePNG/lodepng.h
+stdio.h
+-
+stdlib.h
+-
+fstream
+-
+
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/lib/lodePNG/lodepng.h
+string.h
+-
+vector
+-
+string
+-
+lodepng.h
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/lib/lodePNG/lodepng.h
+iostream
+-
+lodepng.h
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/lib/lodePNG/lodepng.h
+

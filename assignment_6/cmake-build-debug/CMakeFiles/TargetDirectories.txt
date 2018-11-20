@@ -1,0 +1,12 @@
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/CMakeFiles/doc.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/glew/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/glew/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/glew/CMakeFiles/glew.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/lodePNG/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/lodePNG/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/lib/lodePNG/CMakeFiles/lodePNG.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/src/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/src/CMakeFiles/edit_cache.dir
+/mnt/c/Users/joeft/Git/CG-HS18/assignment_6/cmake-build-debug/src/CMakeFiles/SolarSystem.dir
