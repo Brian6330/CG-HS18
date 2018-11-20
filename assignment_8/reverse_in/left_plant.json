@@ -5,6 +5,6 @@
 	"angle_deg": 60,
 	"num_iters": 7,
 	"rules": {
-		"F": "?"
+		"F": "F[+F]F"
 	}
 }

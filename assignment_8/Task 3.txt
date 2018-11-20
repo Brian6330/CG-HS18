@@ -1,0 +1,25 @@
+Everything but rules given, rules should match the iterations in the assignment_8.pdf
+
+left_plant system
+Iterations n = 7 
+Rotation angle d = 60? 
+Initial state: s0 = F
+Rules: Close but not quite; F=F[+F]F
+
+crossout system
+Iterations n = 4 
+Rotation angle d = 90? 
+Initial state: s0 = F + F + F + F
+Rules: F=F-FF+F+FF-F
+
+hexerode system 
+Iterations n = 4 
+Rotation angle d = 60? 
+Initial state: s0 = -F + F + F + F + F + F
+Rules: ?
+
+flower_plant system
+Iterations n = 7 
+Rotation angle d = 120? 
+Initial state: s0 = T
+Rules:
