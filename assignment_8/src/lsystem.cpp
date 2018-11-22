@@ -23,23 +23,32 @@ std::string LindenmayerSystemDeterministic::expandSymbol(unsigned char const& sy
 
 std::string LindenmayerSystem::expandOnce(std::string const& symbol_sequence) {
 	/*============================================================
-		TODO 1.2
+		DONE 1.2
 		Perform one iteration of grammar expansion on `symbol_sequence`.
 		Use the expandSymbol method
 	*/
-	
-	return "";
+	std::string result = "";
+	std::string tempString = symbol_sequence;
+	while (tempString.length() > 0) {
+		result += expandSymbol(tempString[0]);
+		tempString.erase(0, 1);
+	}
+	return result;
 
 	//============================================================
 }
 
 std::string LindenmayerSystem::expand(std::string const& initial, uint32_t num_iters) {
 	/*============================================================
-		TODO 1.3
+		DONE 1.3
 		Perform `num_iters` iterations of grammar expansion (use expandOnce)
 	*/
-
-	return "";
+	auto sequence = initial;
+	while (num_iters > 0) {
+		sequence = expandOnce(sequence);
+		num_iters--;
+	}
+	return sequence;
 	
 	//============================================================
 }
