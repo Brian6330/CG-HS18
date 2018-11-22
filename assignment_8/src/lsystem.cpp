@@ -6,22 +6,20 @@
 
 std::string LindenmayerSystemDeterministic::expandSymbol(unsigned char const& sym) {
 	/*============================================================
-		TODO 1.1
+		DONE 1.1
 		For a given symbol in the sequence, what should it be replaced with after expansion?
 	*/
     auto search = rules.find(sym);
 
     if (search != rules.end())
     {
-
         return search->second;
     }
     else
     {
-        //else return the original symbol
         return { char(sym) };
     }
-	
+
 	//============================================================
 
 	/*
@@ -38,10 +36,9 @@ std::string LindenmayerSystem::expandOnce(std::string const& symbol_sequence) {
 		Use the expandSymbol method
 	*/
 	std::string result = "";
-	std::string tempString = symbol_sequence;
-	while (tempString.length() > 0) {
-		result += expandSymbol(tempString[0]);
-		tempString.erase(0, 1);
+
+	for (char character : symbol_sequence) {
+		result += expandSymbol(character);
 	}
 	return result;
 
@@ -53,20 +50,21 @@ std::string LindenmayerSystem::expand(std::string const& initial, uint32_t num_i
 		DONE 1.3
 		Perform `num_iters` iterations of grammar expansion (use expandOnce)
 	*/
-	auto sequence = initial;
-	while (num_iters > 0) {
-		sequence = expandOnce(sequence);
-		num_iters--;
+    std::string sequence = initial;
+	for(uint32_t l = 0; l < num_iters; ++l){
+	    sequence = expandOnce(sequence);
+
 	}
-	return sequence;
-	
+    return sequence;
+
 	//============================================================
 }
 
 std::vector<Segment> LindenmayerSystem::draw(std::string const& symbols) {
 	std::vector<Segment> lines; // this is already initialized as empty vector
+
 	/*============================================================
-		TODO 2
+		DONE
 		Build line segments according to the sequence of symbols
 		The initial position is (0, 0) and the initial direction is "up" (0, 1)
 		Segment is std::pair<vec2, vec2>
@@ -82,6 +80,59 @@ std::vector<Segment> LindenmayerSystem::draw(std::string const& symbols) {
 		implementing rotations.
 	*/
 
+	vec2 pos = vec2(0,0);
+    vec2 dir = vec2(0,1);
+    vec2 destination = vec2(0.0);
+
+    Segment top;
+    std::stack<Segment> stack;
+
+    mat2 rotation_matrix = mat2(0);
+    double angle = deg2rad(rotation_angle_deg);
+
+    for (char chara : symbols)
+
+        switch (chara) {
+
+        case '+': {
+            rotation_matrix =  mat2(cosf(angle), -sinf(angle), sinf(angle), cosf(angle));
+            dir = normalize(rotation_matrix * dir);
+
+            break;
+        }
+
+        case '-': {
+
+            rotation_matrix =  mat2(cosf(-angle), -sinf(-angle), sinf(-angle), cosf(-angle));
+            dir = normalize(rotation_matrix * dir);
+
+            break;
+        }
+
+        case '[': {
+            stack.push({pos, dir});
+            break;
+        }
+
+        case ']': {
+
+            top = stack.top();
+            stack.pop();
+            pos = top.first;
+            dir = top.second;
+
+            break;
+        }
+
+        default:{
+            destination = pos + dir;
+            lines.push_back({pos, destination });
+            pos = destination;
+        }
+
+    }
+
+
 	return lines;
 	//============================================================
 }
@@ -94,7 +145,8 @@ std::string LindenmayerSystemStochastic::expandSymbol(unsigned char const& sym) 
 
 		Use dice.roll() to get a random number between 0 and 1
 	*/
-	
+
+
 	return {char(sym)};
 
 	//============================================================
