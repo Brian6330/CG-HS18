@@ -9,8 +9,18 @@ std::string LindenmayerSystemDeterministic::expandSymbol(unsigned char const& sy
 		TODO 1.1
 		For a given symbol in the sequence, what should it be replaced with after expansion?
 	*/
+    auto search = rules.find(sym);
 
-	return {char(sym)}; // this constructs string from char
+    if (search != rules.end())
+    {
+
+        return search->second;
+    }
+    else
+    {
+        //else return the original symbol
+        return { char(sym) };
+    }
 	
 	//============================================================
 
