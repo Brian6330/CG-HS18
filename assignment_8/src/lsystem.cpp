@@ -139,15 +139,30 @@ std::vector<Segment> LindenmayerSystem::draw(std::string const& symbols) {
 
 std::string LindenmayerSystemStochastic::expandSymbol(unsigned char const& sym) {
 	/*============================================================
-		TODO 4
+		DONE 4
 		For a given symbol in the sequence, what should it be replaced with after expansion?
 		(stochastic case)
 
 		Use dice.roll() to get a random number between 0 and 1
 	*/
+	auto search = rules.find(sym);
 
 
-	return {char(sym)};
+	if (search != rules.end())
+	{
+		double r = dice.roll();
+		double p = 0;
+		const std::vector<StochasticRule> rule_list = search->second;
+
+		for (int i = 0; i < rule_list.size(); i++) {
+			if (r > p && r <= rule_list[i].probability + p) return rule_list[i].expansion;
+			p += rule_list[i].probability;
+		}
+	}
+	else
+	{
+		return { char(sym) };
+	};
 
 	//============================================================
 }
