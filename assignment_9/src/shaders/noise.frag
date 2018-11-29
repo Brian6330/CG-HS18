@@ -63,7 +63,28 @@ float perlin_noise_1d(float x) {
 	 * values using the smooth interolation polygnomial blending_weight_poly.
 	 * Note: gradients in the gradient lookup table are 2D, 
 	 */
-	return 0.0f;
+
+     float c0 = 0;
+     float  c1 = 0;
+
+     c0 = floor(x);
+     c1 = c0 + 1;
+
+     vec2 g0 = vec2(0);
+     vec2 g1 = vec2(0);
+
+     g0 = gradients[hash_func(vec2(c0,0))%12];
+     g1 = gradients[hash_func(vec2(c1,0))%12];
+
+     vec2 phi0,phi1;
+
+     phi0 = g0 * (x - c0);
+     phi1 = g1 * (x - c1);
+
+     float t = x - c0;
+     float alpha = blending_weight_poly(t);
+
+    return mix(phi0,phi1,alpha);
 }
 
 float perlin_fbm_1d(float x) {
@@ -75,7 +96,15 @@ float perlin_fbm_1d(float x) {
 	 * successive octave.
 	 * Note: the GLSL `for` loop may be useful.
 	 */
-	return 0.0f;
+	 float fbm  = 0.0f;
+	 float w1 = freq_multiplier;
+	 float a1 = ampl_multiplier;
+
+	 for ( int i = 0; i < (num_octaves-1); i++){
+            fbm += pow(a1,i)*(x*pow(w1,i));
+	 }
+
+ return fbm;
 }
 
 // ----- plotting -----
